@@ -5,8 +5,8 @@ import {generateToken} from "./generateToken";
 
 // controllers/UserController.ts or wherever you're handling login
 const user = {
-  email: 'rajatranjan300@gmail.com',
-  password: 'Ohjnxxj8ce' // check spelling & case
+  email: 'user@123gmail.com',
+  password: '12345678' // check spelling & case
 };
 export const loginuser = (req: Request, res: Response) => {
   const { email, password } = req.body;
