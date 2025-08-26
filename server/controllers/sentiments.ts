@@ -19,8 +19,8 @@ const sentiment = new Sentiment();
 
 
 
-const NEWS_API_KEY = process.env.NEWSDATA_API_KEY || 'pub_6936d669c0c34bfbaaa02d2b597fbe44'; // Load from .env
-const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY || 'd2ctb01r01qihtctf3u0d2ctb01r01qihtctf3ug';
+const NEWS_API_KEY = process.env.NEWSDATA_API_KEY // Load from .env
+const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY // Load from .env
 
 function calculateDateRange(range: string) {
     const today = new Date();
