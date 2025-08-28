@@ -1,0 +1,135 @@
+.interval-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+.mat-tab-body-content {
+  overflow: hidden; /* prevent inner scroll */
+  height: 100%;     /* fill the tab content area */
+}
+.table-container {
+  height: 450px;       /* fixed height */
+  overflow-y: auto;    /* vertical scrollbar if needed */
+  display: block;      /* ensure it behaves like a block element */
+}
+
+
+.interval-buttons button.active {
+    background-color: #3f51b5;
+    color: white;
+}
+
+.stock-info-header {
+    margin-bottom: 1rem;
+}
+
+.green-arrow {
+    color: green;
+    font-weight: 500;
+}
+
+.red-arrow {
+    color: red;
+    font-weight: 500;
+}
+
+.neutral-arrow {
+    color: #888;
+    font-weight: 500;
+}
+
+
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: #999;
+}
+
+.stock-info-header {
+    padding: 1rem;
+    background-color: #f7f9fc;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.positive {
+    color: green;
+    font-weight: 500;
+}
+
+.negative {
+    color: red;
+    font-weight: 500;
+}
+
+.indicator-selection {
+  margin: 20px 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 20px;
+  gap: 40px;
+}
+
+.indicator-group {
+  display: flex;
+  flex-direction: row;
+  min-width: 400px;
+}
+
+.group-title {
+  font-weight: bold;
+  margin-right: 8px;
+  font-size: 15px;
+  color: #333;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+
+
+.container {
+  font-family: monospace;
+  padding: 1rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.controls {
+  margin-bottom: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}

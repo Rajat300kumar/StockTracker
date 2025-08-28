@@ -1,0 +1,29 @@
+<nav class="sidebar" [class.collapsed]="!showText()">
+    <ul class="menu-list">
+        <ng-container *ngFor="let item of menu">
+            <!-- Menu Header -->
+            <li class="menu-header" (click)="toggleMenu(item.key)">
+                <span class="icon">{{ item.icon }}</span>
+                <span class="text">{{ item.label }}</span>
+                <span class="arrow" *ngIf="showText()">
+                    {{ open === item.key ? '▼' : '▶' }}
+                </span>
+            </li>
+
+            <!-- Submenu -->
+            <ul *ngIf="open === item.key" class="submenu">
+                <li *ngFor="let sub of item.submenus" (click)="selectSubmenu(sub.key, $event)" [class.selected]="selectedSubmenu === sub.key">
+                    <button>
+                        <span class="icon">{{ sub.icon }}</span>
+                        <span class="text">{{ sub.label }}</span>
+                    </button>
+                </li>
+            </ul>
+        </ng-container>
+    </ul>
+
+</nav>
+<div class="menu-toggle" (click)="toggleText()">
+    <span class="icon">{{ showText() ? '🔍' : '❌' }}</span>
+    <span class="text">{{ showText() ? 'Hide Text' : 'Show Text' }}</span>
+</div>

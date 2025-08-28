@@ -1,0 +1,18 @@
+<!-- ag-grid.component.html -->
+<!-- <ag-grid-angular style="width: 100%; height: 100%;" class="ag-theme-alpine" [rowSelection]="rowSelection"
+    [columnDefs]="columnDefs" [rowData]="rowData" [defaultColDef]="defaultColDef" rowSelection="single"
+    domLayout="autoHeight" [theme]="'legacy'" >
+</ag-grid-angular> -->
+<ag-grid-angular
+  class="ag-theme-alpine"
+  style="width: 100%; height: 100%;"
+  [columnDefs]="columnDefs"
+  [rowData]="rowData"
+  [defaultColDef]="defaultColDef"
+  [rowSelection]="rowSelection"
+  domLayout="autoHeight"
+  [theme]="'legacy'"
+  (gridReady)="onGridReady($event)"
+  (cellClicked)="onCellClicked($event)"
+  (rowDoubleClicked)="onRowDoubleClicked($event)">
+</ag-grid-angular>

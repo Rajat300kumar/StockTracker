@@ -1,0 +1,39 @@
+<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedIndexChange)="onTabChange($event)">
+    <mat-tab class="table-container" *ngFor="let tab of tabsList; let i = index" [label]="formatLabel(tab)" style="height: calc(100% - 45px);"
+        [ngClass]="{ 'active-tab': selectedTabIndex === i }" >
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+            <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+                <th mat-header-cell *matHeaderCellDef>
+                    {{ column === 'slNo' ? 'SL No' : (column | titlecase) }}
+                </th>
+                <td mat-cell *matCellDef="let stock; let i = index">
+                    <ng-container [ngSwitch]="column">
+
+                        <!-- Serial Number Column -->
+                        <span *ngSwitchCase="'slNo'">
+                            {{ i + 1 }}
+                        </span>
+
+                        <!-- Change Column with icon and color -->
+                        <span *ngSwitchCase="'change'" [ngClass]="getColumnValue(stock, column)?.colorClass">
+                            <mat-icon>
+                                {{ getColumnValue(stock, column)?.icon }}
+                            </mat-icon>
+                            {{ getColumnValue(stock, column)?.percent }}%
+                        </span>
+
+                        <!-- Default Case for All Other Columns -->
+                        <span *ngSwitchDefault>
+                            {{ getColumnValue(stock, column) }}
+                        </span>
+
+                    </ng-container>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+    </mat-tab>
+</mat-tab-group>

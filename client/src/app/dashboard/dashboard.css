@@ -1,0 +1,26 @@
+.dashboard-container{
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 45px); /* Adjust height to account for header */
+    overflow: hidden;
+}
+.demo-chart {
+  height: 400px;
+}
+.dashboard-container > .ag-grid-container {
+    flex: 1; /* Allow the grid to take up remaining space */
+    margin: 10px;
+}
+.dashboard-content{
+width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box ;
+
+}
+.dashboard-header {
+    padding: 10px;
+    
+}

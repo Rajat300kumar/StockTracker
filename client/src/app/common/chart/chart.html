@@ -1,0 +1,14 @@
+<p>chart works!</p>
+
+<ng-container *ngIf="chartSeries?.length; else noData">
+  <apx-chart
+    [type]="chartType"
+    [series]="chartSeries"
+    [options]="chartOptions"
+    height="350">
+  </apx-chart>
+</ng-container>
+
+<ng-template #noData>
+  <p>No data available</p>
+</ng-template>

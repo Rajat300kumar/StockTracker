@@ -1,0 +1,28 @@
+[
+  {
+    "SYMBOL": "TCS",
+    "NAME OF COMPANY": "Tata Consultancy Services Limited",
+    "SERIES": "EQ",
+    "DATE OF LISTING": "25-Aug-04",
+    "PAID UP VALUE": "1",
+    "MARKET LOT": "1",
+    "ISIN NUMBER": "INE467B01029",
+    "FACE VALUE": "1",
+    "Ticker": ".NS",
+    "YahooEquiv": "TCS.NS",
+    "Yahoo_Equivalent_Code": "'TCS.NS'"
+  },
+  {
+    "SYMBOL": "ADANIPOWER",
+    "NAME OF COMPANY": "Adani Power Limited",
+    "SERIES": "EQ",
+    "DATE OF LISTING": "20-Aug-09",
+    "PAID UP VALUE": "10",
+    "MARKET LOT": "1",
+    "ISIN NUMBER": "INE814H01011",
+    "FACE VALUE": "10",
+    "Ticker": ".NS",
+    "YahooEquiv": "ADANIPOWER.NS",
+    "Yahoo_Equivalent_Code": "'ADANIPOWER.NS'"
+  }
+]

@@ -1,0 +1,185 @@
+.market-status {
+  font-size: 0.85rem;
+  color: #444;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.disclaimer {
+  color: #0073e6;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.interval-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.interval-buttons button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.interval-buttons button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+/* Container styling */
+div[ng-reflect-ng-if] {
+  max-width: 480px;
+  margin: 1.5rem auto;
+  padding: 1.5rem 2rem;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Heading */
+.bottumine {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: #2c3e50;
+  border-bottom: 2px solid #2980b9;
+  padding-bottom: 0.3rem;
+}
+
+/* Range paragraph */
+p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1.2rem;
+  font-style: italic;
+}
+
+/* Label for select */
+label {
+  font-weight: 600;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #34495e;
+}
+
+
+
+.interval-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+.mat-tab-body-content {
+  overflow: hidden; /* prevent inner scroll */
+  height: 100%;     /* fill the tab content area */
+}
+.table-container {
+  height: 450px;       /* fixed height */
+  overflow-y: auto;    /* vertical scrollbar if needed */
+  display: block;      /* ensure it behaves like a block element */
+}
+
+
+.interval-buttons button.active {
+    background-color: #3f51b5;
+    color: white;
+}
+
+.stock-info-header {
+    margin-bottom: 1rem;
+}
+
+.green-arrow {
+    color: green;
+    font-weight: 500;
+}
+
+.red-arrow {
+    color: red;
+    font-weight: 500;
+}
+
+.neutral-arrow {
+    color: #888;
+    font-weight: 500;
+}
+
+
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: #999;
+}
+
+.stock-info-header {
+    padding: 1rem;
+    background-color: #f7f9fc;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.positive {
+    color: green;
+    font-weight: 500;
+}
+
+.negative {
+    color: red;
+    font-weight: 500;
+}
+
+.indicator-selection {
+  margin: 20px 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 20px;
+  gap: 40px;
+}
+
+.indicator-group {
+  display: flex;
+  flex-direction: row;
+  min-width: 400px;
+}
+
+.group-title {
+  font-weight: bold;
+  margin-right: 8px;
+  font-size: 15px;
+  color: #333;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}

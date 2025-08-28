@@ -1,0 +1,28 @@
+<app-header [title]=title></app-header>
+<!-- <app-peer-group></app-peer-group> -->
+<div class="dashboard-container">
+    <app-side-menu style="width: auto;" (menuSelected)="onMenuSelect($event)"></app-side-menu>
+    <div class="dashboard-content">
+        <div class="dashboard-header">
+            <div *ngIf="selectedMenu === 'view-all' || selectedMenu==='import-csv'">
+                <app-ag-grid #allstock [config]="allStrock"></app-ag-grid>
+            </div>
+            <div *ngIf="selectedMenu === 'day' || selectedMenu === 'monthly' || selectedMenu === 'year'">
+                <app-stock-chart [config]="stockConfig"></app-stock-chart>
+            </div>
+            <div *ngIf="selectedMenu === 'IN' || selectedMenu === 'US' || selectedMenu === 'CN'">
+                <app-overview [config]="market"></app-overview>
+            </div>
+            <div *ngIf="selectedMenu === 'price' ||selectedMenu === 'volume' || selectedMenu === 'technical'">
+                <app-analysis [config]="analysis"></app-analysis>
+            </div>
+            <div *ngIf="selectedMenu === 'sentiment'">
+                <app-sentiment [config]="sentiment"></app-sentiment>
+            </div>
+            <div
+                *ngIf="selectedMenu === 'Predictstock' || selectedMenu === 'PredictHistorical' || selectedMenu === 'PredictConfidence'">
+                <app-prediction [config]="pridectionconfig"></app-prediction>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="interval-selector">
+  <label>📆 Interval:</label>
+  <button
+    *ngFor="let interval of intervals"
+    (click)="onIntervalChange(interval)"
+    [class.active]="interval === selectedInterval">
+    {{ interval }}
+  </button>
+</div>
+<div class="sentiment-header">
+    🔍 Stock: <strong>{{ stockSymbol || 'N/A' }}</strong> | Range: <strong>{{ range || 'N/A' }}</strong> | Source: <span
+        class="emoji">🗞️ News</span>
+</div>
+
+<section class="sentiment-summary">
+    <h3>💬 Sentiment Analysis - {{ stockSymbol || 'Stock' }} (Last {{ range || 'Period' }})</h3>
+
+    <ul class="sentiment-stats">
+        <li>
+            <span class="label">🟢 Overall Sentiment Score:</span>
+            <span class="score" [class.positive]="sentimentData.score > 0" [class.negative]="sentimentData.score < 0"
+                [class.neutral]="sentimentData.score === 0">
+                {{ sentimentData.score || 0 }}
+            </span>
+            ({{ sentimentData.score > 0 ? 'Positive' : sentimentData.score < 0 ? 'Negative' : 'Neutral' }}) </li>
+        <li>
+            <span class="label">📰 News Sources Scanned:</span> {{ sentimentData.sources || 0 }}
+        </li>
+        <li>
+            <span class="label">📉 Negative Articles:</span> {{ sentimentData.negative || 0 }} |
+            <span class="label">📈 Positive Articles:</span> {{ sentimentData.positive || 0 }} |
+            <span class="label">⚖️ Neutral:</span> {{ sentimentData.neutral || 0 }}
+        </li>
+    </ul>
+</section>
+
+<hr />
+
+<section class="headlines">
+    <h4>📰 Article Sentiments</h4>
+    <div *ngFor="let h of sentimentData.headlines" class="headline-item">
+        <p [class.positive]="h.score > 0" [class.negative]="h.score < 0" [class.neutral]="h.score === 0">
+            <span class="sentiment-icon">
+                {{ h.score > 0 ? '✅' : h.score < 0 ? '❌' : '⚖️' }} </span>
+                    {{ h.text }}
+                    <span class="score">
+                        ({{ h.score > 0 ? '+' : '' }}{{ h.score }})
+                    </span>
+        </p>
+    </div>
+</section>

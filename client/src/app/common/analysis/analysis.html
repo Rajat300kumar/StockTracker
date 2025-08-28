@@ -1,0 +1,179 @@
+<!-- Stock Info Header -->
+<div class="stock-info-header">
+    <h2>
+        {{ symbol }}
+        <span *ngIf="percentageChange !== null" [ngClass]="{
+      'positive': percentageChange > 0,
+      'negative': percentageChange < 0
+    }">
+            ({{ percentageChange | number:'1.2-2' }}%)
+        </span>
+    </h2>
+
+
+    <div class="info-row">
+        <span><strong>Exchange:</strong> {{ getExchangeFromSymbol(symbol) }}</span>
+        <span><strong>Currency:</strong> {{ currency }}</span>
+    </div>
+
+    <div class="info-row">
+        <span><strong>Current Price:</strong> {{ currentPrice | number: '1.2-2' }} {{ currency }}</span>
+        <span><strong>Last Updated:</strong> {{ lastUpdated | date: 'medium' }}</span>
+    </div>
+</div>
+
+<!-- Interval Buttons -->
+<div class="interval-buttons">
+    <button *ngFor="let interval of intervals" (click)="onIntervalChange(interval)"
+        [class.active]="selectedInterval === interval">
+        {{ interval }}
+    </button>
+</div>
+
+<div class="indicator-selection">
+
+    <!-- Moving Averages Row (SMA + EMA) -->
+    <div class="row" style="margin: 10px 0;">
+        <!-- SMA Section -->
+        <div class="indicator-group">
+            <label class="group-title">SMA:</label>
+            <div class="checkbox-group">
+                <label *ngFor="let period of smaOptions" class="checkbox-label">
+                    <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'SMA')"
+                        [checked]="selectedSMA.includes(period)" />
+                    SMA{{ period }}
+                </label>
+            </div>
+        </div>
+
+        <!-- EMA Section -->
+        <div class="indicator-group">
+            <label class="group-title">EMA:</label>
+            <div class="checkbox-group">
+                <label *ngFor="let period of emaOptions" class="checkbox-label">
+                    <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'EMA')"
+                        [checked]="selectedEMA.includes(period)" />
+                    EMA{{ period }}
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- RSI Row -->
+    <div class="row" style="margin: 10px 0;">
+        <div class="indicator-group">
+            <label class="group-title">RSI:</label>
+            <div class="checkbox-group">
+                <label *ngFor="let period of rsiOptions" class="checkbox-label">
+                    <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'RSI')"
+                        [checked]="selectedRSI.includes(period)" />
+                    RSI{{ period }}
+                </label>
+            </div>
+        </div>
+        <div class="indicator-group" *ngIf="config.reportType=='technical'">
+            <label class="group-title">MACD:</label>
+            <div class="checkbox-group">
+                <label *ngFor="let macd of macdOptions" class="checkbox-label">
+                    <input type="checkbox" (change)="onMacdChange($event, macd)" [checked]="isMacdSelected(macd)" />
+                    MACD({{ macd.fast }},{{ macd.slow }},{{ macd.signal }})
+                </label>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+    <!-- 📊 Table Tab -->
+    <mat-tab label="Table">
+        <div class="table-container">
+
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+                <ng-container matColumnDef="date">
+                    <th mat-header-cell *matHeaderCellDef>Date</th>
+                    <td mat-cell *matCellDef="let row">{{ row.date |date:'mediumDate' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="open">
+                    <th mat-header-cell *matHeaderCellDef>Open</th>
+                    <td mat-cell *matCellDef="let row">{{ row.open | number:'1.2-2' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="high">
+                    <th mat-header-cell *matHeaderCellDef>High</th>
+                    <td mat-cell *matCellDef="let row">{{ row.high | number:'1.2-2' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="low">
+                    <th mat-header-cell *matHeaderCellDef>Low</th>
+                    <td mat-cell *matCellDef="let row">{{ row.low | number:'1.2-2' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="close">
+                    <th mat-header-cell *matHeaderCellDef>Close</th>
+                    <td mat-cell *matCellDef="let row">{{ row.close | number:'1.2-2' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="volume">
+                    <th mat-header-cell *matHeaderCellDef>Volume</th>
+                    <td mat-cell *matCellDef="let row">{{ row.volume | numberSuffix }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="change">
+                    <th mat-header-cell *matHeaderCellDef>Change</th>
+                    <td mat-cell *matCellDef="let element; let i = index">
+                        <ng-container *ngIf="i === 0">–</ng-container>
+                        <ng-container *ngIf="i > 0">
+                            <span [ngClass]="{
+        'green-arrow': element.trend === 'up',
+        'red-arrow': element.trend === 'down'
+      }">
+                                {{ element.trend === 'up' ? '🔺' : (element.trend === 'down' ? '🔻' : '') }}
+                                <span *ngIf="element.dailyChangePercent != null">
+                                    {{ element.dailyChangePercent | number: '1.2-2' }}%
+                                </span>
+                            </span>
+                        </ng-container>
+                    </td>
+                </ng-container>
+
+
+
+                <!-- Dynamically render indicator columns -->
+                <ng-container *ngFor="let col of displayedColumns.slice(7)" [matColumnDef]="col">
+                    <th mat-header-cell *matHeaderCellDef>{{ col }}</th>
+                    <td mat-cell *matCellDef="let row">
+                        <ng-container *ngIf="row[col] !== null && row[col] !== undefined; else dash">
+                            <ng-container *ngIf="isNumber(row[col]); else asText">
+                                {{ row[col] | number:'1.2-2' }}
+                            </ng-container>
+                            <ng-template #asText>
+                                {{ row[col] }}
+                            </ng-template>
+                        </ng-container>
+                        <ng-template #dash>–</ng-template>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+    </mat-tab>
+
+    <!-- 📈 Chart Tab -->
+    <mat-tab label="Chart">
+        <ng-container *ngIf="chartVisible">
+            <apx-chart *ngIf="chartOptions?.series" [series]="chartOptions.series || []"
+                [chart]="chartOptions.chart || defaultChart" [xaxis]="chartOptions.xaxis || {}">
+            </apx-chart>
+        </ng-container>
+    </mat-tab>
+
+
+</mat-tab-group>

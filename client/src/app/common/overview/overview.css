@@ -1,0 +1,26 @@
+.positive {
+  color: green;
+  font-weight: bold;
+}
+
+.negative {
+  color: red;
+  font-weight: bold;
+}
+
+mat-icon {
+  vertical-align: middle;
+  font-size: 16px;
+  margin-right: 2px;
+}
+::ng-deep .mat-tab-label.active-tab {
+  background-color: #e3f2fd; /* Light blue, adjust as needed */
+  font-weight: bold;
+  border-bottom: 2px solid #1976d2; /* Optional underline highlight */
+}
+
+.table-container {
+  height: 600px;       /* fixed height */
+  overflow-y: auto;    /* vertical scrollbar if needed */
+  display: block;      /* ensure it behaves like a block element */
+}

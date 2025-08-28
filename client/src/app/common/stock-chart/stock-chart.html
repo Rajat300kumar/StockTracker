@@ -1,0 +1,100 @@
+<div *ngIf="config">
+
+    <div class="stock-info-header">
+        <h2>
+            {{ symbol }}
+            <span *ngIf="percentageChange !== null" [ngClass]="{
+      'positive': percentageChange > 0,
+      'negative': percentageChange < 0
+    }">
+                ({{ percentageChange | number:'1.2-2' }}%)
+            </span>
+        </h2>
+
+
+        <div class="info-row">
+            <span><strong>Exchange:</strong> {{ getExchangeFromSymbol(symbol) }}</span>
+            <span><strong>Currency:</strong> {{ currency }}</span>
+        </div>
+
+        <div class="info-row">
+            <span><strong>Current Price:</strong> {{ currentPrice | number: '1.2-2' }} {{ currency }}</span>
+            <span><strong>Last Updated:</strong> {{ lastUpdated | date: 'medium' }}</span>
+        </div>
+    </div>
+    <span class="bottumine"></span>
+
+    <!-- Interval Buttons -->
+    <div class="interval-buttons">
+        <button *ngFor="let interval of intervals" (click)="onIntervalChange(interval)"
+            [class.active]="selectedInterval === interval">
+            {{ interval }}
+        </button>
+    </div>
+    <label for="type">Chart Type:</label>
+    <select [(ngModel)]="chartType" (change)="onChartTypeChange()">
+        <option value="candlestick">Candlestick</option>
+        <option value="line">Line</option>
+        <option value="bar">Bar</option>
+        <option value="donut">Donut</option>
+    </select>
+</div>
+<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="Table">
+        <div *ngIf="stockData" class="table-container">
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+
+                <!-- Date Column -->
+                <ng-container matColumnDef="date">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+                    <td mat-cell *matCellDef="let element">{{ element.date | date: 'mediumDate' }}</td>
+                </ng-container>
+
+                <!-- Open Column -->
+                <ng-container matColumnDef="open">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Open</th>
+                    <td mat-cell *matCellDef="let element">{{ element.open | number: '1.2-2' }}</td>
+                </ng-container>
+
+                <!-- High Column -->
+                <ng-container matColumnDef="high">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>High</th>
+                    <td mat-cell *matCellDef="let element">{{ element.high | number: '1.2-2' }}</td>
+                </ng-container>
+
+                <!-- Low Column -->
+                <ng-container matColumnDef="low">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Low</th>
+                    <td mat-cell *matCellDef="let element">{{ element.low | number: '1.2-2' }}</td>
+                </ng-container>
+
+                <!-- Close Column -->
+                <ng-container matColumnDef="close">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Close</th>
+                    <td mat-cell *matCellDef="let element">{{ element.close | number: '1.2-2' }}</td>
+                </ng-container>
+
+                <!-- Volume Column -->
+                <ng-container matColumnDef="volume">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Volume</th>
+                    <td mat-cell *matCellDef="let element">{{ element.volume | number }}</td>
+                </ng-container>
+
+                <!-- Table Headers & Rows -->
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            </table>
+
+        </div>
+    </mat-tab>
+    <mat-tab label="Chart">
+        <ng-container *ngIf="chartVisible">
+            <apx-chart *ngIf="chartOptions?.series" [series]="chartOptions.series || []"
+                [chart]="chartOptions.chart || defaultChart" [xaxis]="chartOptions.xaxis || {}">
+            </apx-chart>
+        </ng-container>
+
+    </mat-tab>
+
+</mat-tab-group>
