@@ -20,6 +20,7 @@ createUser.js
 createUser.js
 users.db
 db.ts
+/server/users.db
 server/db.ts
 
 # Logs
