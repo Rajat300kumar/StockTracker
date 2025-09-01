@@ -71,7 +71,7 @@ export class AgGrid implements OnInit, OnChanges {
           return icon;
         },
         width: 100,
-        maxWidth:80,
+        maxWidth: 80,
         sortable: false,
         filter: false
       };

@@ -19,9 +19,9 @@ export class SideMenu {
       label: 'Stocks',
       submenus: [
         { key: 'view-all', icon: '📋', label: 'View All' },
-        { key: 'add-new', icon: '➕', label: 'Add New' },
+        // { key: 'add-new', icon: '➕', label: 'Add New' },
         { key: 'import-csv', icon: '📤', label: 'Import From CSV' },
-        { key: 'export-csv', icon: '📥', label: 'Export To CSV' },
+        // { key: 'export-csv', icon: '📥', label: 'Export To CSV' },
       ]
     },
     {
