@@ -5,8 +5,8 @@ import { openDB } from './db'; // adjust path
 async function createUser() {
   const db = await openDB();
 
-  const email = 'rajatranjan300@gmail.com';
-  const plainPassword = 'ohjnxxj8ce';
+  const email = 'user@gmail.com';
+  const plainPassword = '12345678';
 
   const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
