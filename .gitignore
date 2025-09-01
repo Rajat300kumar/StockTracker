@@ -11,7 +11,8 @@ server/.env
 dist/
 client/dist/
 server/dist/
-server/ml
+server/ml/
+server/venv/
 # Logs
 *.log
 
