@@ -1,24 +1,45 @@
-import { Request,Response } from "express";
+import { Request, Response } from "express";
+import { openDB } from "./db";
 // import token from "../generateToken";
 // Update the path below to the correct location if needed
-import {generateToken} from "./generateToken";
+import { generateToken } from "./generateToken";
+import bcrypt from "bcrypt";
 
 // controllers/UserController.ts or wherever you're handling login
 const user = {
   email: 'user@123gmail.com',
   password: '12345678' // check spelling & case
 };
-export const loginuser = (req: Request, res: Response) => {
+export const loginuser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log("Login attempt with email:", email);
-  
-  if (email === user.email && password === user.password) {
-    const token = generateToken(email);
+  console.log("Login attempt with email:", email,password);
+  try {
+    const db = await openDB();
+    console.log("Database connection established");
+    console.log("Querying for user:", db);
+    const user = await db.get('SELECT * FROM users WHERE username = ?', email);
+    console.log("User fetched from DB:", user);
+    if (!user) {
+      console.log("User not found");
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    // Check password using bcrypt (assuming hashed password in DB)
+    const validPassword = await bcrypt.compare(password, user.password);
+    console.log("Password valid:", validPassword);
+    if (!validPassword) {
+      console.log("Password mismatch");
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    // Generate JWT token with userId (or email) in payload
+    const token = generateToken(user.id.toString());
     console.log("Token generated:", token);
+
     res.json({ token });
-  } else {
-    console.log("Invalid credentials");
-    res.status(401).json({ message: "Invalid credentials" });
+
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Internal server error" });
+    return;
   }
 };
 // Mock user data for demonstration purposes
