@@ -15,6 +15,13 @@ server/ml/
 server/venv/
 ml/
 venv/
+createUser.js
+# Database files
+createUser.js
+users.db
+db.ts
+server/db.ts
+
 # Logs
 *.log
 
