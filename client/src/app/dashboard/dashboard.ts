@@ -15,10 +15,10 @@ import { Analysis, AnalysisConfig } from '../common/analysis/analysis';
 import { LoaderService } from '../service/loader';
 import { Sentiment, SentimentConfig } from '../common/sentiment/sentiment';
 import { Prediction, pridection } from '../common/prediction/prediction';
-import { PeerGroup } from '../common/peer-group/peer-group';
+// import { PeerGroup } from '../common/peer-group/peer-group';
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, Header, SideMenu, AgGrid, StockChart, Overview, Analysis, Sentiment, Prediction,PeerGroup],
+  imports: [CommonModule, Header, SideMenu, AgGrid, StockChart, Overview, Analysis, Sentiment, Prediction],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

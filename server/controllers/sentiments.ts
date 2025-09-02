@@ -7,6 +7,7 @@ import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
 
 import { parseStringPromise } from 'xml2js';
+import pool from '../db/postgres'; // instead of from './db'
 
 
 import puppeteer from "puppeteer";
@@ -121,7 +122,7 @@ export const getSentimentData = async (req: Request, res: Response, next: NextFu
     }
 }
 
-export const getSentimentData_ = async (req: Request, res: Response, next: NextFunction) => {
+export const getSentimentData_original = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { symbols, range } = req.body;
         console.log("Fetching sentiment from RSS", symbols, range);
@@ -274,6 +275,116 @@ export const getSentimentDatagoogle = async (req: Request, res: Response, next: 
     }
 
 }
+export const getSentimentData_ = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { symbols, range } = req.body;
+        console.log("Fetching sentiment from RSS", symbols, range);
+
+        if (!symbols || !Array.isArray(symbols) || symbols.length === 0) {
+            return res.status(400).json({ error: "Missing or invalid symbols" });
+        }
+
+        const symbol = symbols[0]; // e.g., "TCS.NS"
+        const { period1, period2 } = calculateDateRange(range);
+
+        // Fetch company_id from companies table
+        const companyResult = await pool.query(
+            `SELECT id FROM companies WHERE symbol = $1`,
+            [symbol]
+        );
+        if (companyResult.rowCount === 0) {
+            return res.status(404).json({ error: `Company not found for symbol: ${symbol}` });
+        }
+        const companyId = companyResult.rows[0].id;
+
+        // Fetch RSS feed
+        const query = encodeURIComponent(symbol);
+        const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=en-IN&gl=IN&ceid=IN:en`;
+        const xmlResponse = await fetch(rssUrl);
+        const xmlText = await xmlResponse.text();
+        const parsed = await parseStringPromise(xmlText);
+
+        const articles = parsed.rss?.channel?.[0]?.item || [];
+
+        const sentiment = new Sentiment();
+
+        const filteredArticles = articles.filter((item: any) => {
+            const pubDate = new Date(item.pubDate?.[0]);
+            return pubDate >= new Date(period1) && pubDate <= new Date(period2);
+        });
+
+        const analyzedArticles = [];
+
+        for (const item of filteredArticles) {
+            const title = item.title?.[0] || '';
+            const description = item.description?.[0] || '';
+            const link = item.link?.[0] || '';
+            const pubDateRaw = item.pubDate?.[0] || '';
+            const publishedAt = new Date(pubDateRaw);
+
+            const text = `${title} ${description}`;
+            const analysis = sentiment.analyze(text);
+
+            // Insert into DB (avoid duplicates using ON CONFLICT)
+            try {
+                await pool.query(
+                    `INSERT INTO sentiments (
+                        company_id, article_title, article_description,
+                        published_at, sentiment_score, sentiment_comparative,
+                        sentiment_positive, sentiment_negative
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    ON CONFLICT (company_id, article_link) DO NOTHING`,
+                    [
+                        companyId,
+                        title,
+                        description,
+                        publishedAt,
+                        analysis.score,
+                        analysis.comparative,
+                        analysis.positive,
+                        analysis.negative
+                    ]
+                );
+            } catch (dbErr) {
+                console.error('DB Insert Error for sentiment:', dbErr);
+            }
+
+            // Push to response array
+            analyzedArticles.push({
+                title,
+                description,
+                link,
+                pubDate: publishedAt,
+                sentiment: {
+                    score: analysis.score,
+                    comparative: analysis.comparative,
+                    positive: analysis.positive,
+                    negative: analysis.negative
+                }
+            });
+        }
+
+        const totalScore = analyzedArticles.reduce((sum, a) => sum + a.sentiment.score, 0);
+        const overallSentimentScore = analyzedArticles.length
+            ? totalScore / analyzedArticles.length
+            : 0;
+
+        return res.json({
+            success: true,
+            symbol,
+            range,
+            from: period1,
+            to: period2,
+            totalArticlesAnalyzed: analyzedArticles.length,
+            overallSentimentScore,
+            articles: analyzedArticles
+        });
+
+    } catch (error) {
+        console.error("RSS Sentiment Error:", error);
+        return res.status(500).json({ error: "Failed to fetch sentiment from RSS." });
+    }
+};
 
 
 

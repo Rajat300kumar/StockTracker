@@ -22,7 +22,8 @@ users.db
 db.ts
 /server/users.db
 server/db.ts
-
+server/users.db-journal
+server/users.db
 # Logs
 *.log
 

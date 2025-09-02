@@ -1,23 +1,19 @@
 import { Request, Response } from "express";
-import { openDB } from "./db";
+import { openDB } from "./db/db";
 // import token from "../generateToken";
 // Update the path below to the correct location if needed
 import { generateToken } from "./generateToken";
 import bcrypt from "bcrypt";
 
 // controllers/UserController.ts or wherever you're handling login
-const user = {
-  email: 'user@123gmail.com',
-  password: '12345678' // check spelling & case
-};
 export const loginuser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log("Login attempt with email:", email,password);
+  console.log("Login attempt with email:", email, password);
   try {
     const db = await openDB();
     console.log("Database connection established");
     console.log("Querying for user:", db);
-    const user = await db.get('SELECT * FROM users WHERE username = ?', email);
+    const user = await db.get('SELECT * FROM users WHERE email = ?', email);
     console.log("User fetched from DB:", user);
     if (!user) {
       console.log("User not found");
