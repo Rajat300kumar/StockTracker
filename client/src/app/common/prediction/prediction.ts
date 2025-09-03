@@ -275,12 +275,12 @@ export class Prediction implements OnChanges {
 
         // Trigger download
         // Trigger download
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `${data.symbol}_technical_data.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // const link = document.createElement('a');
+        // link.href = URL.createObjectURL(blob);
+        // link.download = `${data.symbol}_technical_data.csv`;
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
 
       },
       error(err) {

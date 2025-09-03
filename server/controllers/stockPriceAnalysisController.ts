@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import yahooFinance from 'yahoo-finance2';
 import { SMA, EMA, RSI, MACD } from 'technicalindicators';
 import { subDays, startOfYear, format } from 'date-fns';
+import { getCompanyIdBySymbol, getLatestIndicatorDate } from '../util/dbUtils';
+import pool from '../db/postgres';
 
 // Type for MovingAverages input
 type MovingAveragesInput = {
@@ -160,7 +162,7 @@ function calculateIndicators(mas: MA[], values: number[]) {
     return results;
 }
 
-export async function stockPriceAnalysisControllerbbk(req: Request, res: Response) {
+export async function stockPriceAnalysisControllerbbk_org(req: Request, res: Response) {
     try {
         const { symbols, range, reportType, movingAverages }: {
             symbols: string[];
@@ -237,6 +239,201 @@ export async function stockPriceAnalysisControllerbbk(req: Request, res: Respons
                 historical: result,
             },
         });
+    } catch (error: any) {
+        console.error('Error in stockPriceAnalysisController:', error);
+        return res.status(500).json({ success: false, error: error.message || 'Internal server error' });
+    }
+}
+
+export async function stockPriceAnalysisControllerbbk(req: Request, res: Response) {
+    try {
+        const {
+            symbols,
+            range,
+            reportType,
+            movingAverages,
+        }: {
+            symbols: string[];
+            range: string;
+            reportType: 'price' | 'volume' | 'technical';
+            movingAverages: any;
+        } = req.body;
+
+        if (!symbols || symbols.length === 0 || !range || !reportType || !movingAverages) {
+            return res.status(400).json({ success: false, error: 'Missing required parameters' });
+        }
+
+        const symbol = symbols[0];
+        const { period1, period2 } = calculateDateRange(range);
+
+        const companyId = await getCompanyIdBySymbol(symbol);
+        if (!companyId) {
+            return res.status(404).json({ success: false, error: 'Company not found in database' });
+        }
+
+        const result = await yahooFinance.historical(symbol, {
+            period1,
+            period2,
+            interval: '1d',
+        });
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({ success: false, error: 'No historical data returned' });
+        }
+
+        // Extract price or volume data as needed
+        const values = result
+            .map((r) => {
+                if (reportType === 'price' || reportType === 'technical') return r.close;
+                if (reportType === 'volume') return r.volume;
+                return null;
+            })
+            .filter((v) => v !== null) as number[];
+
+        const flattenedMAStrings = flattenMovingAverages(movingAverages);
+        const mas = parseMovingAverages(flattenedMAStrings);
+
+        const indicatorResults = calculateIndicators(mas, values);
+
+        // Assuming this is inside an async function or route handler
+
+        // Log lengths for sanity check
+        // console.log("result length:", result.length);
+        // console.log("indicatorResults keys:", Object.keys(indicatorResults));
+
+        // Extract indicator arrays for easier access, fallback to empty arrays to avoid errors
+        const sma7Arr = indicatorResults["SMA7"] || [];
+        const sma20Arr = indicatorResults["SMA20"] || [];
+        const sma50Arr = indicatorResults["SMA50"] || [];
+        const ema10Arr = indicatorResults["EMA10"] || [];
+        const ema20Arr = indicatorResults["EMA20"] || [];
+        const ema50Arr = indicatorResults["EMA50"] || [];
+        const ema100Arr = indicatorResults["EMA100"] || [];
+        const rsi7Arr = indicatorResults["RSI7"] || [];
+        const rsi14Arr = indicatorResults["RSI14"] || [];
+        const rsi21Arr = indicatorResults["RSI21"] || [];
+        const rsi30Arr = indicatorResults["RSI30"] || [];
+        const macd12269Arr = indicatorResults["MACD12,26,9"] || [];
+        const macd5139Arr = indicatorResults["MACD5,13,9"] || [];
+        const macd10309Arr = indicatorResults["MACD10,30,9"] || [];
+
+        for (let i = 0; i < result.length; i++) {
+            const row = result[i];
+            const date = new Date(row.date);
+            console.log(`Processing row ${i} for date ${date}`);
+
+            if (isNaN(date.getTime())) {
+                console.warn(`Invalid date at index ${i}, skipping`);
+                continue;
+            }
+
+            // Build indicators object for this row (handle undefined with null)
+            const indicators = {
+                sma7: sma7Arr[i] ?? null,
+                sma20: sma20Arr[i] ?? null,
+                sma50: sma50Arr[i] ?? null,
+                ema10: ema10Arr[i] ?? null,
+                ema20: ema20Arr[i] ?? null,
+                ema50: ema50Arr[i] ?? null,
+                ema100: ema100Arr[i] ?? null,
+                rsi7: rsi7Arr[i] ?? null,
+                rsi14: rsi14Arr[i] ?? null,
+                rsi21: rsi21Arr[i] ?? null,
+                rsi30: rsi30Arr[i] ?? null,
+                macd_12_26_9: macd12269Arr[i]?.MACD ?? null,
+                macd_signal_12_26_9: macd12269Arr[i]?.signal ?? null,
+                macd_histogram_12_26_9: macd12269Arr[i]?.histogram ?? null,
+                macd_5_13_9: macd5139Arr[i]?.MACD ?? null,
+                macd_signal_5_13_9: macd5139Arr[i]?.signal ?? null,
+                macd_histogram_5_13_9: macd5139Arr[i]?.histogram ?? null,
+                macd_10_30_9: macd10309Arr[i]?.MACD ?? null,
+                macd_signal_10_30_9: macd10309Arr[i]?.signal ?? null,
+                macd_histogram_10_30_9: macd10309Arr[i]?.histogram ?? null,
+            };
+
+            // Optional: skip if *all* indicators are null (you can remove if you want to insert anyway)
+            if (Object.values(indicators).every(val => val === null)) {
+                console.warn(`No indicators found for index ${i}, skipping insert`);
+                continue;
+            }
+
+            try {
+                await pool.query(
+                    `INSERT INTO technical_indicators (
+        company_id, date,
+        sma7, sma20, sma50,
+        ema10, ema20, ema50, ema100,
+        rsi7, rsi14, rsi21, rsi30,
+        macd_12_26_9, macd_signal_12_26_9, macd_histogram_12_26_9,
+        macd_5_13_9, macd_signal_5_13_9, macd_histogram_5_13_9,
+        macd_10_30_9, macd_signal_10_30_9, macd_histogram_10_30_9,
+        open, high, low, close, volume
+      ) VALUES (
+        $1, $2,
+        $3, $4, $5,
+        $6, $7, $8, $9,
+        $10, $11, $12, $13,
+        $14, $15, $16,
+        $17, $18, $19,
+        $20, $21, $22,
+        $23, $24, $25, $26, $27
+      )
+      ON CONFLICT (company_id, date) DO UPDATE SET
+        sma7 = COALESCE(EXCLUDED.sma7, technical_indicators.sma7),
+        sma20 = COALESCE(EXCLUDED.sma20, technical_indicators.sma20),
+        sma50 = COALESCE(EXCLUDED.sma50, technical_indicators.sma50),
+        ema10 = COALESCE(EXCLUDED.ema10, technical_indicators.ema10),
+        ema20 = COALESCE(EXCLUDED.ema20, technical_indicators.ema20),
+        ema50 = COALESCE(EXCLUDED.ema50, technical_indicators.ema50),
+        ema100 = COALESCE(EXCLUDED.ema100, technical_indicators.ema100),
+        rsi7 = COALESCE(EXCLUDED.rsi7, technical_indicators.rsi7),
+        rsi14 = COALESCE(EXCLUDED.rsi14, technical_indicators.rsi14),
+        rsi21 = COALESCE(EXCLUDED.rsi21, technical_indicators.rsi21),
+        rsi30 = COALESCE(EXCLUDED.rsi30, technical_indicators.rsi30),
+        macd_12_26_9 = COALESCE(EXCLUDED.macd_12_26_9, technical_indicators.macd_12_26_9),
+        macd_signal_12_26_9 = COALESCE(EXCLUDED.macd_signal_12_26_9, technical_indicators.macd_signal_12_26_9),
+        macd_histogram_12_26_9 = COALESCE(EXCLUDED.macd_histogram_12_26_9, technical_indicators.macd_histogram_12_26_9),
+        macd_5_13_9 = COALESCE(EXCLUDED.macd_5_13_9, technical_indicators.macd_5_13_9),
+        macd_signal_5_13_9 = COALESCE(EXCLUDED.macd_signal_5_13_9, technical_indicators.macd_signal_5_13_9),
+        macd_histogram_5_13_9 = COALESCE(EXCLUDED.macd_histogram_5_13_9, technical_indicators.macd_histogram_5_13_9),
+        macd_10_30_9 = COALESCE(EXCLUDED.macd_10_30_9, technical_indicators.macd_10_30_9),
+        macd_signal_10_30_9 = COALESCE(EXCLUDED.macd_signal_10_30_9, technical_indicators.macd_signal_10_30_9),
+        macd_histogram_10_30_9 = COALESCE(EXCLUDED.macd_histogram_10_30_9, technical_indicators.macd_histogram_10_30_9),
+        open = COALESCE(EXCLUDED.open, technical_indicators.open),
+        high = COALESCE(EXCLUDED.high, technical_indicators.high),
+        low = COALESCE(EXCLUDED.low, technical_indicators.low),
+        close = COALESCE(EXCLUDED.close, technical_indicators.close),
+        volume = COALESCE(EXCLUDED.volume, technical_indicators.volume)
+      `,
+                    [
+                        companyId, date,
+                        indicators.sma7, indicators.sma20, indicators.sma50,
+                        indicators.ema10, indicators.ema20, indicators.ema50, indicators.ema100,
+                        indicators.rsi7, indicators.rsi14, indicators.rsi21, indicators.rsi30,
+                        indicators.macd_12_26_9, indicators.macd_signal_12_26_9, indicators.macd_histogram_12_26_9,
+                        indicators.macd_5_13_9, indicators.macd_signal_5_13_9, indicators.macd_histogram_5_13_9,
+                        indicators.macd_10_30_9, indicators.macd_signal_10_30_9, indicators.macd_histogram_10_30_9,
+                        row.open, row.high, row.low, row.close, row.volume,
+                    ]
+                );
+            } catch (error) {
+                console.error(`Error inserting row ${i} for date ${date}:`, error);
+            }
+        }
+
+        // After insertions, return your original response unchanged
+        return res.json({
+            success: true,
+            data: {
+                symbol,
+                lastUpdated: result[result.length - 1]?.date,
+                currentPrice: result[result.length - 1]?.close,
+                indicators: indicatorResults,
+                historical: result,
+            },
+        });
+
+
     } catch (error: any) {
         console.error('Error in stockPriceAnalysisController:', error);
         return res.status(500).json({ success: false, error: error.message || 'Internal server error' });

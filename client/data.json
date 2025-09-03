@@ -1,16 +1,16 @@
 [
   {
-    "SYMBOL": "TCS",
-    "NAME OF COMPANY": "Tata Consultancy Services Limited",
+    "SYMBOL": "RELIANCE",
+    "NAME OF COMPANY": "Reliance Industries Limited",
     "SERIES": "EQ",
-    "DATE OF LISTING": "25-Aug-04",
-    "PAID UP VALUE": "1",
+    "DATE OF LISTING": "29-Nov-95",
+    "PAID UP VALUE": "10",
     "MARKET LOT": "1",
-    "ISIN NUMBER": "INE467B01029",
-    "FACE VALUE": "1",
+    "ISIN NUMBER": "INE002A01018",
+    "FACE VALUE": "10",
     "Ticker": ".NS",
-    "YahooEquiv": "TCS.NS",
-    "Yahoo_Equivalent_Code": "'TCS.NS'"
+    "YahooEquiv": "RELIANCE.NS",
+    "Yahoo_Equivalent_Code": "'RELIANCE.NS'"
   },
   {
     "SYMBOL": "ADANIPOWER",
@@ -24,5 +24,18 @@
     "Ticker": ".NS",
     "YahooEquiv": "ADANIPOWER.NS",
     "Yahoo_Equivalent_Code": "'ADANIPOWER.NS'"
+  },
+  {
+    "SYMBOL": "TCS",
+    "NAME OF COMPANY": "Tata Consultancy Services Limited",
+    "SERIES": "EQ",
+    "DATE OF LISTING": "25-Aug-04",
+    "PAID UP VALUE": "1",
+    "MARKET LOT": "1",
+    "ISIN NUMBER": "INE467B01029",
+    "FACE VALUE": "1",
+    "Ticker": ".NS",
+    "YahooEquiv": "TCS.NS",
+    "Yahoo_Equivalent_Code": "'TCS.NS'"
   }
 ]

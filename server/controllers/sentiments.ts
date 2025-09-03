@@ -11,6 +11,7 @@ import pool from '../db/postgres'; // instead of from './db'
 
 
 import puppeteer from "puppeteer";
+import { getOrCreateCompanyId } from "../util/dbUtils";
 // replace your fetch calls with this fetch
 
 // Then use fetch as usual
@@ -223,7 +224,7 @@ export const getSentimentDatagoogle = async (req: Request, res: Response, next: 
         const sentiment = new Sentiment();
         const analyzedArticles: any[] = [];
         $("div.dbsr").each((_, el) => {
-            console.log("_, el",_, el)
+            console.log("_, el", _, el)
             const title = $(el).find("div[role='heading']").text().trim();
             const link = $(el).find("a").attr("href") || "";
             const source = $(el).find(".NUnG9d span").first().text().trim();
@@ -286,16 +287,11 @@ export const getSentimentData_ = async (req: Request, res: Response, next: NextF
 
         const symbol = symbols[0]; // e.g., "TCS.NS"
         const { period1, period2 } = calculateDateRange(range);
-
+        // ✅ 🔽 This replaces your old SELECT/IF logic  
         // Fetch company_id from companies table
-        const companyResult = await pool.query(
-            `SELECT id FROM companies WHERE symbol = $1`,
-            [symbol]
-        );
-        if (companyResult.rowCount === 0) {
-            return res.status(404).json({ error: `Company not found for symbol: ${symbol}` });
-        }
-        const companyId = companyResult.rows[0].id;
+        const companyId = await getOrCreateCompanyId(symbol);
+        console.log("companyId", companyId)
+        // const companyId = companyResult.rows[0].id;
 
         // Fetch RSS feed
         const query = encodeURIComponent(symbol);
@@ -332,7 +328,7 @@ export const getSentimentData_ = async (req: Request, res: Response, next: NextF
                         company_id, article_title, article_description,
                         published_at, sentiment_score, sentiment_comparative,
                         sentiment_positive, sentiment_negative
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                     ON CONFLICT (company_id, article_link) DO NOTHING`,
                     [
                         companyId,
