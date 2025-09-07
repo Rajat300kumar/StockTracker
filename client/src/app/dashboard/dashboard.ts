@@ -15,6 +15,7 @@ import { Analysis, AnalysisConfig } from '../common/analysis/analysis';
 import { LoaderService } from '../service/loader';
 import { Sentiment, SentimentConfig } from '../common/sentiment/sentiment';
 import { Prediction, pridection } from '../common/prediction/prediction';
+import { StockNavigationService } from '../common/ag-grid/stock-navigation.service';
 // import { PeerGroup } from '../common/peer-group/peer-group';
 @Component({
   selector: 'app-dashboard',
@@ -32,7 +33,7 @@ export class Dashboard implements OnInit {
   // stockchart!: StockMeta;
 
 
-  constructor(private http: HttpClient, private dialog: MatDialog, private postService: Post, private cdref: ChangeDetectorRef, private ngZone: NgZone,) {
+  constructor(private http: HttpClient, private dialog: MatDialog, private postService: Post, private cdref: ChangeDetectorRef, private ngZone: NgZone,private stockNav: StockNavigationService) {
     // You can initialize any properties or services here if needed
   }
 
@@ -246,6 +247,7 @@ export class Dashboard implements OnInit {
     this.postService.getimportcsv().subscribe((data: any) => {
       console.log("data", data)
       this.loader.hide()
+      this.symbol = []; // ✅ Clear the array before adding new data
       data.forEach((item: any) => {
         this.symbol.push(item.YahooEquiv); // Assuming each item has a 'symbol' property
       });

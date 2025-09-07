@@ -21,6 +21,7 @@ interface PredictionData {
   backtestAccuracy: number;
   yahooAccuracy: number;
   smaAccuracy: number;
+  mape?: number;  // add this optional property for prediction error margin
   drivers: {
     ema20: number;
     rsi14: number;
@@ -34,6 +35,7 @@ interface PredictionData {
     error: string;
   }[];
 }
+
 @Component({
   selector: 'app-prediction',
   imports: [CommonModule],
@@ -45,6 +47,7 @@ export class Prediction implements OnChanges {
   stockSymbol = 'TCS.NS';
   intervals: string[] = ['1 D', '5 D', '1 M', '6 M', 'YTD', '1 Y', '5 Y', 'MAX'];
   constructor(private cdref: ChangeDetectorRef, private loader: LoaderService, private postService: Post) { }
+  driverImpacts: { [key: string]: 'up' | 'down' } = {};
 
   currentPrice = 189.23;
   currency = 'USD';
@@ -89,6 +92,7 @@ export class Prediction implements OnChanges {
     backtestAccuracy: 93.2,
     yahooAccuracy: 86.4,
     smaAccuracy: 78.9,
+    mape: 5.8,  // Expected prediction error margin (MAPE)
     drivers: {
       ema20: 3422.15,
       rsi14: 58.2,
@@ -105,11 +109,13 @@ export class Prediction implements OnChanges {
   };
 
 
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config'] && this.config) {
       this.symbol = this.config.symbols[0]
       console.log(this.config)
       this.fetchUpdatedprediton()
+      this.computeDriverImpacts();
     }
   }
 
@@ -158,26 +164,49 @@ export class Prediction implements OnChanges {
     if (symbol.endsWith('.T')) return 'TSE (Japan)';
     return 'NYSE / NASDAQ (US)';
   }
-  
+
   fetchUpdatedprediton() {
-    // this.loader.show()
-    console.log(this.config)
-    // this.postService.preditionml(this.config).subscribe({
-    //   next: (res: any) => {
-    //     this.loader.hide()
-    //     console.log(res)
-    //   },
-    //   error(err) {
-    //     console.log(err)
-    //   },
-    // })
+    this.loader.show();
+    this.postService.preditionml(this.config).subscribe({
+      next: (res: any) => {
+        this.loader.hide();
+        this.data = res.prediction.prediction;  // ✅ Extract the actual prediction data
+        this.computeDriverImpacts();
+        console.log(this.data);
+      }
+      ,
+      error: (err) => {
+        this.loader.hide();
+        console.error(err);
+        this.error = 'Prediction loading failed';
+      }
+    });
   }
+
+
+  // Add this method in your Prediction component
+  getArrowIcon(driver: string): string {
+    return this.driverImpacts[driver] === 'up' ? '▲' : '▼';
+  }
+
+  getArrowClass(driver: string): string {
+    return this.driverImpacts[driver] === 'up' ? 'green-arrow' : 'red-arrow';
+  }
+
+  computeDriverImpacts(): void {
+    if (!this.data || !this.data.drivers) return;
+    const basePrice = this.data.base || this.currentPrice || 0;
+    this.driverImpacts['ema20'] = this.data.drivers.ema20 >= basePrice ? 'up' : 'down';
+    this.driverImpacts['rsi14'] = this.data.drivers.rsi14 >= 50 ? 'up' : 'down';
+  }
+
 
   onIntervalChange(interval: any) {
     this.selectedInterval = interval
     console.log(interval)
     this.config.range = this.selectedInterval.replace(/\s+/g, '');
   }
+
   saveCSV(): void {
     this.loader.show()
     const config = {

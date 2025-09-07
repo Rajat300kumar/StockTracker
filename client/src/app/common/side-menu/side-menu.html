@@ -12,7 +12,8 @@
 
             <!-- Submenu -->
             <ul *ngIf="open === item.key" class="submenu">
-                <li *ngFor="let sub of item.submenus" (click)="selectSubmenu(sub.key, $event)" [class.selected]="selectedSubmenu === sub.key">
+                <li *ngFor="let sub of item.submenus" (click)="selectSubmenu(sub.key, $event)"
+                    [class.selected]="selectedSubmenu === sub.key">
                     <button>
                         <span class="icon">{{ sub.icon }}</span>
                         <span class="text">{{ sub.label }}</span>
@@ -21,9 +22,8 @@
             </ul>
         </ng-container>
     </ul>
-
+    <div class="menu-toggle" (click)="toggleText()">
+        <span class="icon">{{ showText() ? '=' : '❌' }}</span>
+        <span class="text">{{ showText() ? 'Hide Text' : 'Show Text' }}</span>
+    </div>
 </nav>
-<div class="menu-toggle" (click)="toggleText()">
-    <span class="icon">{{ showText() ? '🔍' : '❌' }}</span>
-    <span class="text">{{ showText() ? 'Hide Text' : 'Show Text' }}</span>
-</div>

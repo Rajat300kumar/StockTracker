@@ -14,6 +14,7 @@ server/dist/
 server/ml/
 server/venv/
 ml/
+server/ml
 venv/
 createUser.js
 # Database files

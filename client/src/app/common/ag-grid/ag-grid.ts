@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef, NgZone, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef, NgZone, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular';
 import { ColDef } from 'ag-grid-community';
 import { filter } from 'rxjs';
+import { StockNavigationService } from './stock-navigation.service';
 
 export interface GridConfig {
   columnDefs: any[];
@@ -23,6 +24,7 @@ export interface GridConfig {
 export class AgGrid implements OnInit, OnChanges {
   @Input() config: GridConfig | undefined;
   @Input() rowSelection: 'single' | 'multiple' = 'single';
+  stockNavigationService = inject(StockNavigationService);
 
   columnDefs: any[] = [];
   rowData: any[] = [];
@@ -66,6 +68,10 @@ export class AgGrid implements OnInit, OnChanges {
           icon.onclick = () => {
             console.log('Review clicked for:', params.data.symbol);
             // You can add routing, modal, etc.
+            const symbol = params.data?.SYMBOL || params.data?.symbol; // ensure proper casing
+            console.log('Review clicked for:', symbol);
+
+            this.stockNavigationService.selectStock(symbol);
           };
 
           return icon;
@@ -131,3 +137,5 @@ export class AgGrid implements OnInit, OnChanges {
     console.log('Row double clicked:', params);
   }
 }
+
+

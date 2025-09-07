@@ -1,5 +1,19 @@
 [
   {
+    "SYMBOL": "ADANIPOWER",
+    "NAME OF COMPANY": "Adani Power Limited",
+    "SERIES": "EQ",
+    "DATE OF LISTING": "20-Aug-09",
+    "PAID UP VALUE": "10",
+    "MARKET LOT": "1",
+    "ISIN NUMBER": "INE814H01011",
+    "FACE VALUE": "10",
+    "Ticker": ".NS",
+    "YahooEquiv": "ADANIPOWER.NS",
+    "Yahoo_Equivalent_Code": "'ADANIPOWER.NS'"
+  }
+  ,
+   {
     "SYMBOL": "RELIANCE",
     "NAME OF COMPANY": "Reliance Industries Limited",
     "SERIES": "EQ",
@@ -12,18 +26,18 @@
     "YahooEquiv": "RELIANCE.NS",
     "Yahoo_Equivalent_Code": "'RELIANCE.NS'"
   },
-  {
-    "SYMBOL": "ADANIPOWER",
-    "NAME OF COMPANY": "Adani Power Limited",
+    {
+    "SYMBOL": "HDFCBANK",
+    "NAME OF COMPANY": "HDFC Bank Limited",
     "SERIES": "EQ",
-    "DATE OF LISTING": "20-Aug-09",
-    "PAID UP VALUE": "10",
+    "DATE OF LISTING": "08-Nov-95",
+    "PAID UP VALUE": "1",
     "MARKET LOT": "1",
-    "ISIN NUMBER": "INE814H01011",
-    "FACE VALUE": "10",
+    "ISIN NUMBER": "INE040A01034",
+    "FACE VALUE": "1",
     "Ticker": ".NS",
-    "YahooEquiv": "ADANIPOWER.NS",
-    "Yahoo_Equivalent_Code": "'ADANIPOWER.NS'"
+    "YahooEquiv": "HDFCBANK.NS",
+    "Yahoo_Equivalent_Code": "'HDFCBANK.NS'"
   },
   {
     "SYMBOL": "TCS",

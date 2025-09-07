@@ -133,3 +133,39 @@ th, td {
   padding: 0.5rem;
   border-bottom: 1px solid #ccc;
 }
+.green-arrow {
+  color: green;
+  font-weight: bold;
+  margin-right: 6px;
+}
+.red-arrow {
+  color: red;
+  font-weight: bold;
+  margin-right: 6px;
+}
+.tooltip {
+  cursor: help;
+  border-bottom: 1px dotted #666;
+  margin-left: 4px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+.history-table th, .history-table td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  text-align: center;
+}
+.history-table th {
+  background-color: #f0f0f0;
+}
+.positive {
+  color: green;
+}
+.negative {
+  color: red;
+}

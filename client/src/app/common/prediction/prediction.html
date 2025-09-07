@@ -81,10 +81,78 @@
     <div class="save-button">
         <button (click)="saveCSV()">Save CSV</button>
     </div>
-
 </div>
+<div class="card" style="height: 500px; overflow: scroll;">
 
-<div class="card" style="height: 520px;overflow: scroll;">
+  <h4>──────────── Prediction Summary ────────────</h4>
+
+<p>🎯 <strong>Predicted Close:</strong> ₹{{ data.predictedClose | number:'1.1-1' }} on {{ data.predictionDate }}</p>
+<p>ℹ️ <strong>Expected Error Margin:</strong> ±{{ data.mape || 15 }}%</p>
+
+<p>
+  📊 <strong>Confidence:</strong> {{ data.confidence | number:'1.0-0' }}%
+  <span class="tooltip" title="Confidence derived from model’s historical accuracy and validation.">(?)</span>
+  | 🟢 {{ data.riskLevel }}
+</p>
+
+<p>
+  📅 <strong>Model Trained:</strong> {{ data.trainedDate }}
+  <span class="tooltip" title="Date until which model was trained on historical data">(?)</span>
+</p>
+
+<p>
+  📈 <strong>Best:</strong> ₹{{ data.best | number:'1.1-1' }}&nbsp;&nbsp;
+  📍 <strong>Base:</strong> ₹{{ data.base | number:'1.1-1' }}&nbsp;&nbsp;
+  📉 <strong>Worst:</strong> ₹{{ data.worst | number:'1.1-1' }}
+</p>
+
+<p>🧪 <strong>Backtest Accuracy:</strong> {{ data.backtestAccuracy | number:'1.0-0' }}%</p>
+<p>📊 <strong>vs. Yahoo Finance Projection:</strong> {{ data.yahooAccuracy | number:'1.1-1' }}%</p>
+<p>📐 <strong>vs. SMA-only Estimate:</strong> {{ data.smaAccuracy | number:'1.1-1' }}%</p>
+
+<h4>──────────── Top Drivers ────────────</h4>
+<ul>
+  <li [ngClass]="getArrowClass('ema20')">
+    {{ getArrowIcon('ema20') }} 📌 EMA20: {{ data.drivers.ema20 | number:'1.1-1' }}
+    <span class="tooltip" title="Exponential Moving Average over last 20 days">(?)</span>
+  </li>
+  <li [ngClass]="getArrowClass('rsi14')">
+    {{ getArrowIcon('rsi14') }} 📌 RSI14: {{ data.drivers.rsi14 | number:'1.1-1' }}
+    <span class="tooltip" title="Relative Strength Index over last 14 days">(?)</span>
+  </li>
+  <li>
+    📌 Sentiment Score: {{ data.drivers.sentiment }}
+    <span class="tooltip" title="Derived from news and social media analysis">(?)</span>
+  </li>
+</ul>
+
+<h4>──────────── Risk Factors ────────────</h4>
+<ul>
+  <li *ngFor="let risk of data.riskFactors">⚠️ {{ risk }}</li>
+</ul>
+<h4>──────────── Prediction vs Actual History ────────────</h4>
+<table class="history-table" *ngIf="data.history?.length" style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px;">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Predicted</th>
+      <th>Actual</th>
+      <th>Error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let record of data.history">
+      <td>{{ record.date }}</td>
+      <td>{{ record.predicted }}</td>
+      <td>{{ record.actual }}</td>
+      <td [ngClass]="{'positive': record.error && record.error.startsWith('-'), 'negative': record.error && !record.error.startsWith('-')}">
+        {{ record.error }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<!-- <div class="card" style="height: 520px;overflow: scroll;">
     <h3>──────────── Prediction Summary ────────────</h3>
     <p>🎯 <strong>Predicted Close:</strong> ₹{{ data.predictedClose }} on {{ data.predictionDate }}</p>
     <p>📊 <strong>Confidence:</strong> {{ data.confidence }}% | 🟢 {{ data.riskLevel }}</p>
@@ -109,4 +177,4 @@
         <li *ngFor="let risk of data.riskFactors">⚠️ {{ risk }}</li>
     </ul>
     <h3>──────────── Prediction vs Actual History ────────────</h3>
-</div>
+</div> -->
