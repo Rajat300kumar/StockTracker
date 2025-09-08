@@ -287,6 +287,7 @@ export const getSentimentData_ = async (req: Request, res: Response, next: NextF
 
         const symbol = symbols[0]; // e.g., "TCS.NS"
         const { period1, period2 } = calculateDateRange(range);
+        console.log("period1, period2", period1, period2)
         // ✅ 🔽 This replaces your old SELECT/IF logic  
         // Fetch company_id from companies table
         const companyId = await getOrCreateCompanyId(symbol);

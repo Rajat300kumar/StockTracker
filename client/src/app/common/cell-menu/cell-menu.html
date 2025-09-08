@@ -1,0 +1,60 @@
+<!-- cell-menu.component.html -->
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu for stock row">
+    <mat-icon>more_vert</mat-icon>
+</button>
+
+<!-- Mat Menu -->
+<mat-menu #menu="matMenu">
+    <!-- 📑 Reports -->
+    <button mat-menu-item (click)="onSelect('day', 'reports')">
+        <mat-icon>calendar_today</mat-icon>
+        <span>Day Report</span>
+    </button>
+    <button mat-menu-item (click)="onSelect('monthly', 'reports')">
+        <mat-icon>date_range</mat-icon>
+        <span>Monthly Report</span>
+    </button>
+    <button mat-menu-item (click)="onSelect('year', 'reports')">
+        <mat-icon>insert_chart</mat-icon>
+        <span>Annual Report</span>
+    </button>
+    <button mat-menu-item (click)="onSelect('view-all', 'reports')">
+        <mat-icon>list</mat-icon>
+        <span>View All Stocks</span>
+    </button>
+    <mat-divider></mat-divider>
+
+    <!-- 🧠 Analysis -->
+    <button mat-menu-item (click)="onSelect('price', 'analysis')">
+        <mat-icon>show_chart</mat-icon>
+        <span>Price Trends</span>
+    </button>
+    <button mat-menu-item (click)="onSelect('volume', 'analysis')">
+        <mat-icon>bar_chart</mat-icon>
+        <span>Volume Analysis</span>
+    </button>
+    <button mat-menu-item (click)="onSelect('technical', 'analysis')">
+        <mat-icon>functions</mat-icon>
+        <span>Technical Indicators</span>
+    </button>
+    <button mat-menu-item (click)="onSelect('sentiment', 'analysis')">
+        <mat-icon>chat</mat-icon>
+        <span>Sentiment Analysis</span>
+    </button>
+
+    <mat-divider></mat-divider>
+
+    <!-- 🔮 Prediction -->
+    <button mat-menu-item (click)="onSelect('Predictstock', 'Prediction')">
+        <mat-icon>trending_up</mat-icon>
+        <span>Predict Stock Price</span>
+    </button>
+    <button mat-menu-item (click)="onSelect('PredictHistorical', 'Prediction')">
+        <mat-icon>history</mat-icon>
+        <span>Historical Comparison</span>
+    </button>
+    <button mat-menu-item (click)="onSelect('PredictConfidence', 'Prediction')">
+        <mat-icon>track_changes</mat-icon>
+        <span>Confidence Score</span>
+    </button>
+</mat-menu>

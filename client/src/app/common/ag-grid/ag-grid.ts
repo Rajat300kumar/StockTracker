@@ -3,6 +3,7 @@ import { AgGridModule } from 'ag-grid-angular';
 import { ColDef } from 'ag-grid-community';
 import { filter } from 'rxjs';
 import { StockNavigationService } from './stock-navigation.service';
+import { CellMenu } from '../cell-menu/cell-menu';
 
 export interface GridConfig {
   columnDefs: any[];
@@ -54,30 +55,9 @@ export class AgGrid implements OnInit, OnChanges {
         headerName: 'Review',
         field: 'review',
         pinned: 'right',
-        cellRenderer: (params: any) => {
-          const icon = document.createElement('span');
-          icon.innerHTML = '&gt;';
-          icon.style.cursor = 'pointer';
-          icon.style.fontWeight = 'bold';
-          icon.style.fontSize = '18px';
-          icon.style.color = '#1976d2';
-          icon.style.textAlign = 'center';
-          icon.style.display = 'inline-block';
-          icon.style.width = '100%';
-
-          icon.onclick = () => {
-            console.log('Review clicked for:', params.data.symbol);
-            // You can add routing, modal, etc.
-            const symbol = params.data?.SYMBOL || params.data?.symbol; // ensure proper casing
-            console.log('Review clicked for:', symbol);
-
-            this.stockNavigationService.selectStock(symbol);
-          };
-
-          return icon;
-        },
-        width: 100,
-        maxWidth: 80,
+        cellRenderer: CellMenu,  // ✅ Use the Angular component
+        width: 70,
+        maxWidth: 90,
         sortable: false,
         filter: false
       };

@@ -11,16 +11,13 @@ export class Post {
     console.log(selected)
     return this.http.post(`${this.apiUrl}/web_api/saveimportcsv`, { data: selected });
   }
-  preditionml(pd:any){
-     console.log(pd)
+  preditionml(pd: any) {
+    console.log(pd)
     return this.http.post(`${this.apiUrl}/python/predict`, pd)
   }
   anaylisi(pd: object) {
     console.log(pd)
     return this.http.post(`${this.apiUrl}/stocks/anaylisis`, pd)
-  }
-  peergroup(company:any){
-
   }
   sentiment(pd: any) {
     console.log(pd)

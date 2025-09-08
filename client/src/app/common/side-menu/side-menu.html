@@ -3,9 +3,9 @@
         <ng-container *ngFor="let item of menu">
             <!-- Menu Header -->
             <li class="menu-header" (click)="toggleMenu(item.key)">
-                <span class="icon">{{ item.icon }}</span>
+                <mat-icon [style.color]="item.color">{{ item.icon }}</mat-icon>
                 <span class="text">{{ item.label }}</span>
-                <span class="arrow" *ngIf="showText()">
+                <span class="arrow" *ngIf="showText()" [style.color]="item.color">
                     {{ open === item.key ? '▼' : '▶' }}
                 </span>
             </li>
@@ -15,13 +15,14 @@
                 <li *ngFor="let sub of item.submenus" (click)="selectSubmenu(sub.key, $event)"
                     [class.selected]="selectedSubmenu === sub.key">
                     <button>
-                        <span class="icon">{{ sub.icon }}</span>
+                        <mat-icon [style.color]="sub.color">{{ sub.icon }}</mat-icon>
                         <span class="text">{{ sub.label }}</span>
                     </button>
                 </li>
             </ul>
         </ng-container>
     </ul>
+
     <div class="menu-toggle" (click)="toggleText()">
         <span class="icon">{{ showText() ? '=' : '❌' }}</span>
         <span class="text">{{ showText() ? 'Hide Text' : 'Show Text' }}</span>

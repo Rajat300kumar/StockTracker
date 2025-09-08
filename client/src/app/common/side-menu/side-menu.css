@@ -111,3 +111,12 @@
     align-items: center;
     gap: 8px;
 }
+.submenu li button:hover {
+    color: #1976d2;
+    background-color: #f0f0f0;
+}
+.submenu li button:focus {
+    outline: none;
+    border-bottom: 1px solid #1976d2;
+}
+

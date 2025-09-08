@@ -1,11 +1,9 @@
 <div class="interval-selector">
-  <label>📆 Interval:</label>
-  <button
-    *ngFor="let interval of intervals"
-    (click)="onIntervalChange(interval)"
-    [class.active]="interval === selectedInterval">
-    {{ interval }}
-  </button>
+    <label>📆 Interval:</label>
+    <button *ngFor="let interval of intervals" (click)="onIntervalChange(interval)"
+        [class.active]="interval === selectedInterval">
+        {{ interval }}
+    </button>
 </div>
 <div class="sentiment-header">
     🔍 Stock: <strong>{{ stockSymbol || 'N/A' }}</strong> | Range: <strong>{{ range || 'N/A' }}</strong> | Source: <span
@@ -36,7 +34,7 @@
 
 <hr />
 
-<section class="headlines">
+<section class="headlines" style="height: 450px;overflow: scroll;">
     <h4>📰 Article Sentiments</h4>
     <div *ngFor="let h of sentimentData.headlines" class="headline-item">
         <p [class.positive]="h.score > 0" [class.negative]="h.score < 0" [class.neutral]="h.score === 0">

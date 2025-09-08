@@ -20,7 +20,7 @@ export class Sentiment {
   @Input() stockSymbol!: string;
   @Input() range: '1W' | '1M' | '3M' = '1M';
   intervals: string[] = ['1D', '5D', '1M', '6M', 'YTD', '1Y', '5Y', 'MAX'];
-  selectedInterval: string = '1M'; // Default interval
+  selectedInterval: string = '6M'; // Default interval
   @Input() config !: SentimentConfig;
   sentimentData: any
 

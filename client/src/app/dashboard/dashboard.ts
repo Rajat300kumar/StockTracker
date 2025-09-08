@@ -16,6 +16,8 @@ import { LoaderService } from '../service/loader';
 import { Sentiment, SentimentConfig } from '../common/sentiment/sentiment';
 import { Prediction, pridection } from '../common/prediction/prediction';
 import { StockNavigationService } from '../common/ag-grid/stock-navigation.service';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { SidebarService } from '../common/side-menu/side-service';
 // import { PeerGroup } from '../common/peer-group/peer-group';
 @Component({
   selector: 'app-dashboard',
@@ -27,13 +29,19 @@ export class Dashboard implements OnInit {
   title: string = 'StockTracker';
   jsonData: any[] = []; // Array to hold the JSON data
   symbol: string[] = [];
+  singleSymbol: string[] = []; // only for detailed views (price, sentiment, etc.)
+
   selectedMenu = 'view-all';
   stockConfig!: StockConfig
   loader = inject(LoaderService)
+  sidebarService = inject(SidebarService)
   // stockchart!: StockMeta;
 
+  private stockNavSub!: Subscription;
+  stockNavigationService = inject(StockNavigationService);
+  constructor(private http: HttpClient, private dialog: MatDialog, private postService: Post, private cdref: ChangeDetectorRef, private ngZone: NgZone,
 
-  constructor(private http: HttpClient, private dialog: MatDialog, private postService: Post, private cdref: ChangeDetectorRef, private ngZone: NgZone,private stockNav: StockNavigationService) {
+  ) {
     // You can initialize any properties or services here if needed
   }
 
@@ -59,7 +67,7 @@ export class Dashboard implements OnInit {
   }
   sentiment: SentimentConfig = {
     symbols: this.symbol,        // make sure this.symbol is a string[] (like ['TCS'])
-    range: '1M',
+    range: '6M',
     reportType: "sentiment",
   }
   pridectionconfig: pridection = {
@@ -277,11 +285,14 @@ export class Dashboard implements OnInit {
           }
         });
       } else if (menu === 'view-all') {
+        this.singleSymbol = []; // reset!
         console.log("this.symble", this.symbol)
         this.getseletedstockslive(this.symbol);
       } else if (menu === 'day' || menu === 'monthly' || menu === 'year') {
         this.stockConfig = {
-          symbols: this.symbol,        // make sure this.symbol is a string[] (like ['TCS'])
+          symbols: (this.singleSymbol && this.singleSymbol.length > 0)
+            ? this.singleSymbol
+            : [this.symbol[0]],        // make sure this.symbol is a string[] (like ['TCS'])
           range: '1wk',
           reportType: menu,           // not 'day-report' if your backend expects 'day'
           metrics: ['open', 'high', 'low', 'close', 'volume'],
@@ -298,7 +309,9 @@ export class Dashboard implements OnInit {
         console.log("Anylisys", menu)
         this.analysis = {
           ...this.analysis,
-          symbols: this.symbol,
+          symbols: (this.singleSymbol && this.singleSymbol.length > 0)
+            ? this.singleSymbol
+            : [this.symbol[0]],
           range: this.analysis.range,
           reportType: menu as any,
           movingAverages: { SMA: [7] }
@@ -307,7 +320,9 @@ export class Dashboard implements OnInit {
         console.log("Anylisys", menu)
         this.sentiment = {
           ...this.sentiment,
-          symbols: this.symbol,
+          symbols: (this.singleSymbol && this.singleSymbol.length > 0)
+            ? this.singleSymbol
+            : [this.symbol[0]],
           range: this.sentiment.range,
           reportType: menu as any,
         }
@@ -315,7 +330,9 @@ export class Dashboard implements OnInit {
         console.log("Prediction", menu)
         this.pridectionconfig = {
           ...this.pridectionconfig,
-          symbols: this.symbol,
+          symbols: (this.singleSymbol && this.singleSymbol.length > 0)
+            ? this.singleSymbol
+            : [this.symbol[0]],
           range: this.pridectionconfig.range,
           reportType: menu as any,
         }
@@ -328,7 +345,18 @@ export class Dashboard implements OnInit {
     // Example of loading data when the component initializes
     this.getseletedstocks(); // Fetch all stocks data on initialization
     this.loadData();
+    this.stockNavSub = this.stockNavigationService.stockSelected$.subscribe(({ symbol, targetSubmenu, parentMenu }) => {
+      this.singleSymbol = [symbol]; // use separate variable!
+      console.log("Single symble", this.singleSymbol, targetSubmenu, parentMenu)
+      // Sync side menu selection 
 
+      this.sidebarService.setSelectedMenu(parentMenu);
+      this.onMenuSelect(targetSubmenu);
+      this.cdref.detectChanges()
+    });
+  }
+  ngOnDestroy(): void {
+    this.stockNavSub?.unsubscribe();
   }
 
   async loadData() {
