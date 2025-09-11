@@ -10,13 +10,13 @@ router.get('/:symbol', stockController); //
 router.post('/bulk', stockBulkController);
 // router.get('/report/:symbol', stockBulkReportController);
 // In stockRoutes.ts or stockController.ts
-router.post('/report',stockBulkReportController)
-router.post('/marketview',stockmarcketview)
+router.post('/report', stockBulkReportController)
+router.post('/marketview', stockmarcketview)
 // router.post('/anaylisis',stockPriceAnalysisController)
-router.post('/anaylisis',stockPriceAnalysisControllerbbk)
+router.post('/anaylisis', stockPriceAnalysisControllerbbk)
 // router.post('/sentiments',getSentimentData)
-router.post('/sentiments',getSentimentData_)
-router.post('/sentimentgoogle',getSentimentDatagoogle)
+router.post('/sentiments', getSentimentData_)
+router.post('/sentimentgoogle', getSentimentDatagoogle)
 router.get("/company/:symbol", getCompanyOverview);
 
 // ... route handlers ...

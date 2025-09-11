@@ -108,3 +108,17 @@
   gap: 5px;
   font-size: 14px;
 }
+
+.green-text {
+  color: green;
+  font-weight: bold;
+}
+
+.red-text {
+  color: red;
+  font-weight: bold;
+}
+
+.neutral-text {
+  color: gray;
+}

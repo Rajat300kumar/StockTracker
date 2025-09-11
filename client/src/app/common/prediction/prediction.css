@@ -169,3 +169,27 @@ th, td {
 .negative {
   color: red;
 }
+.risk-low {
+  color: green;
+}
+
+.risk-medium {
+  color: orange;
+}
+
+.risk-high {
+  color: red;
+}
+
+.risk-unknown {
+  color: gray;
+}
+.prediction-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 600px;
+  margin: auto;
+  background-color: #f9f9f9;
+}

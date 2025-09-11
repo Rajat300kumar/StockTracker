@@ -57,6 +57,9 @@ export class Analysis implements OnChanges {
   intervals: string[] = ['1 D', '5 D', '1 M', '6 M', 'YTD', '1 Y', '5 Y', 'MAX'];
   selectedInterval: string = '1 D';
   chartVisible: boolean = false;
+  relativeStrengthPeriod: number = 5;
+  momentumScorePeriod: number = 5;
+
   historicalData: any[] = [];
   chartType: any = 'candlestick'; // default
   chartOptions: Partial<ApexOptions> = {};
@@ -80,7 +83,7 @@ export class Analysis implements OnChanges {
 
   defaultChart: ApexChart = { type: 'line', height: 350 };
   stockSymbol = 'AAPL';
-  currentPrice = 189.23;
+  currentPrice = '';
   currency = 'USD';
   symbol = '';
   lastUpdated = new Date();
@@ -183,6 +186,187 @@ export class Analysis implements OnChanges {
     this.getanaylisdata(config);
   }
 
+  calculateRelativeStrength(historical: any[], index: number, period: number): number | null {
+    if (index < period || !historical[index]?.close) return null;
+
+    const validData = historical.slice(index - period, index).filter(day => day?.close != null);
+    if (validData.length < period) return null;
+
+    const sum = validData.reduce((acc, day) => acc + day.close, 0);
+    const avg = sum / period;
+
+    const currentClose = historical[index].close;
+    return +(currentClose / avg).toFixed(4); // rounded to 4 decimals
+  }
+
+  calculateMomentumScore(historical: any[], index: number, period: number): number | null {
+    if (
+      index < period ||
+      !historical[index]?.close ||
+      !historical[index - period]?.close
+    ) {
+      return null;
+    }
+
+    const currentClose = historical[index].close;
+    const pastClose = historical[index - period].close;
+
+    if (pastClose === 0) return null; // avoid divide by zero
+
+    return +(((currentClose - pastClose) / pastClose) * 100).toFixed(2); // return in %
+  }
+
+
+
+
+  calculateStockPerformance(day: any): string {
+    if (day.close > day.open) return 'Positive';
+    if (day.close < day.open) return 'Negative';
+    return 'Neutral';
+  }
+
+  calculateRSIDivergence_grok(historical: any[], indicators: any, index: number): string {
+    const rsiSeries = indicators?.RSI7 || indicators?.RSI14 || indicators?.RSI21 || indicators?.RSI30 || [];
+    if (
+      index < 2 ||
+      rsiSeries[index] == null ||
+      rsiSeries[index - 1] == null ||
+      historical[index]?.close == null ||
+      historical[index - 1]?.close == null
+    ) {
+      return 'None';
+    }
+
+    const rsiToday = rsiSeries[index];
+    const rsiPrev = rsiSeries[index - 1];
+    const priceToday = historical[index].close;
+    const pricePrev = historical[index - 1].close;
+
+    // Add threshold to avoid noise
+    const rsiChangeThreshold = 2; // Minimum RSI change
+    const priceChangeThreshold = 0.5; // Minimum price change (%)
+    const priceChangePercent = ((priceToday - pricePrev) / pricePrev) * 100;
+
+    if (
+      Math.abs(rsiToday - rsiPrev) < rsiChangeThreshold ||
+      Math.abs(priceChangePercent) < priceChangeThreshold
+    ) {
+      return 'None'; // Ignore small changes
+    }
+
+    // Bullish Divergence: RSI decreasing, Price increasing
+    if (rsiToday < rsiPrev && priceToday > pricePrev) {
+      return 'Bullish';
+    }
+
+    // Bearish Divergence: RSI increasing, Price decreasing
+    if (rsiToday > rsiPrev && priceToday < pricePrev) {
+      return 'Bearish';
+    }
+
+    return 'None';
+  }
+  calculateRSIDivergence(
+    historical: any[],
+    indicators: any,
+    index: number,
+    rsiType: 'RSI7' | 'RSI14' | 'RSI21' | 'RSI30' = 'RSI14', // default to RSI14
+    rsiChangeThreshold = 2,
+    priceChangeThreshold = 0.5
+  ): string {
+    const rsiSeries = indicators?.[rsiType] || [];
+
+    if (
+      index < 1 ||
+      rsiSeries[index] == null ||
+      rsiSeries[index - 1] == null ||
+      historical[index]?.close == null ||
+      historical[index - 1]?.close == null
+    ) {
+      return 'None';
+    }
+
+    const rsiToday = rsiSeries[index];
+    const rsiPrev = rsiSeries[index - 1];
+    const priceToday = historical[index].close;
+    const pricePrev = historical[index - 1].close;
+
+    const priceChangePercent = ((priceToday - pricePrev) / pricePrev) * 100;
+
+    // Optional debug logging
+    console.log(`[${rsiType}] Index ${index}`);
+    console.log(`RSI: ${rsiPrev} → ${rsiToday} | Price: ₹${pricePrev} → ₹${priceToday}`);
+    console.log(`RSI Δ: ${Math.abs(rsiToday - rsiPrev)}, Price Δ: ${Math.abs(priceChangePercent)}%`);
+
+    if (
+      Math.abs(rsiToday - rsiPrev) < rsiChangeThreshold ||
+      Math.abs(priceChangePercent) < priceChangeThreshold
+    ) {
+      return 'None';
+    }
+
+    if (rsiToday < rsiPrev && priceToday > pricePrev) {
+      return 'Bullish Divergence';
+    }
+
+    if (rsiToday > rsiPrev && priceToday < pricePrev) {
+      return 'Bearish Divergence';
+    }
+
+    return 'None';
+  }
+
+
+  calculateRSIDivergence_old(historical: any[], indicators: any, index: number): string {
+    if (index === 0) return 'None'; // No previous data for first entry
+    const rsiSeries = indicators?.RSI || [];
+    if (index < 2 || !rsiSeries[index] || !rsiSeries[index - 1]) return 'None';
+    console.log(`index: ${index}, rsiToday: ${rsiSeries[index]}, rsiPrev: ${rsiSeries[index - 1]}`);
+    console.log('RSI Series:', indicators.RSI);
+    console.log(`index: ${index}, priceToday: ${historical[index]?.close}, pricePrev: ${historical[index - 1]?.close}`);
+
+    const rsiToday = rsiSeries[index];
+    const rsiPrev = rsiSeries[index - 1];
+    const priceToday = historical[index].close;
+    const pricePrev = historical[index - 1].close;
+
+    const rsiTrend = rsiToday > rsiPrev ? 'up' : (rsiToday < rsiPrev ? 'down' : 'flat');
+    const priceTrend = priceToday > pricePrev ? 'up' : (priceToday < pricePrev ? 'down' : 'flat');
+    if (rsiToday && rsiPrev && priceToday && pricePrev) {
+      console.log(`rsiToday: ${rsiToday}, rsiPrev: ${rsiPrev}, priceToday: ${priceToday}, pricePrev: ${pricePrev}`);
+      if (rsiToday < rsiPrev && priceToday > pricePrev) return 'Bullish Divergence';
+      if (rsiToday > rsiPrev && priceToday < pricePrev) return 'Bearish Divergence';
+      return 'None';
+    }
+    if (rsiTrend !== priceTrend) return 'Divergence';
+    return 'None';
+  }
+
+
+  ngOnInit() {
+    var pd = { 'symbol': this.config.symbols, "range": this.selectedInterval, "reportType": 'day' }
+    console.log("pd", pd)
+    // this.getExchangeFromSymbol(item.symbols)
+    this.postService.report(pd).subscribe({
+      next: (res: any) => {
+        if (res['message'] == 'Done') {
+          this.loader.hide()
+
+          console.log(res)
+          this.symbol = res.data[0].symbol;
+          this.currentPrice = res.data[0].currentPrice;
+          this.currency = res.data[0].currency
+          this.lastUpdated = new Date(res.data[0].lastUpdated);
+          this.cdref.detectChanges()
+        }
+      },
+      error: (error) => {
+        this.loader.hide()
+        console.log(error)
+      }
+    })
+  }
+
 
   getanaylisdata(config: AnalysisConfig) {
     console.log(config)
@@ -251,12 +435,31 @@ export class Analysis implements OnChanges {
           }
 
 
+          // Custom Calculations
+          let rStrength = null;
+          let momentum = null;
+          let performance = null;
+          let divergence = null;
+          if (this.selectedReportType == 'technical') {
+            rStrength = this.calculateRelativeStrength(historical, i, this.relativeStrengthPeriod);
+            momentum = this.calculateMomentumScore(historical, i, this.momentumScorePeriod);
+            performance = this.calculateStockPerformance(day);
+            divergence = this.calculateRSIDivergence(historical, indicators, i);
+            console.log("rStrength", rStrength, "momentum", momentum, "performance", performance, "divergence", divergence)
+          }
+
+
           return {
             ...day,
             dailyChangePercent: change,
             trend,
-            ...indicatorValues
+            ...indicatorValues,
+            'RS': rStrength || null,
+            'MOM': momentum || null,
+            'PERF': performance || null,
+            'RSIDiv': divergence || null,
           };
+
         });
 
 
@@ -270,9 +473,20 @@ export class Analysis implements OnChanges {
         } else {
           this.currency = 'USD';
         }
-
         // Step 5: Build displayedColumns dynamically (date, open, ..., indicators)
-        this.displayedColumns = ['date', 'open', 'high', 'low', 'close', 'volume', 'change',];
+        if (config.reportType == 'price') {
+          this.displayedColumns = ['date', 'open', 'high', 'low', 'close',];
+        } else if (config.reportType == 'volume') {
+          this.displayedColumns = ['date', 'open', 'high', 'low', 'close', 'volume', 'change',];
+        } else if (config.reportType == 'technical') {
+          this.displayedColumns = ['date', 'open', 'high', 'low', 'close', 'volume', 'change', 'RS', 'MOM', 'PERF', 'RSIDiv'];
+        }
+        else {
+          this.displayedColumns = ['date', 'open', 'high', 'low', 'close', 'volume', 'change',];
+        }
+
+        console.log(this.displayedColumns)
+        // Ensure base columns are included
 
         // for (const key in indicators) {
         //   if (!this.displayedColumns.includes(key)) {

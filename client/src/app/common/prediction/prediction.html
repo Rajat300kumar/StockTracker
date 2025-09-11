@@ -1,180 +1,173 @@
 <div class="stock-info-header">
-    <h2>
-        {{ symbol }}
-        <span *ngIf="percentageChange !== null" [ngClass]="{
+  <h2>
+    {{ symbol }}
+    <span *ngIf="percentageChange !== null" [ngClass]="{
       'positive': percentageChange > 0,
       'negative': percentageChange < 0
     }">
-            ({{ percentageChange | number:'1.2-2' }}%)
-        </span>
-    </h2>
-    <div class="info-row">
-        <span><strong>Exchange:</strong> {{ getExchangeFromSymbol(symbol) }}</span>
-        <span><strong>Currency:</strong> {{ currency }}</span>
-    </div>
+      ({{ percentageChange | number:'1.2-2' }}%)
+    </span>
+  </h2>
+  <div class="info-row">
+    <span><strong>Exchange:</strong> {{ getExchangeFromSymbol(symbol) }}</span>
+    <span><strong>Currency:</strong> {{ currency }}</span>
+  </div>
 
-    <div class="info-row">
-        <span><strong>Current Price:</strong> {{ currentPrice | number: '1.2-2' }} {{ currency }}</span>
-        <span><strong>Last Updated:</strong> {{ lastUpdated | date: 'medium' }}</span>
-    </div>
+  <div class="info-row">
+    <span><strong>Current Price:</strong> {{ currentPrice | number: '1.2-2' }} {{ currency }}</span>
+    <span><strong>Last Updated:</strong> {{ lastUpdated | date: 'medium' }}</span>
+  </div>
 </div>
 
 <!-- Interval Buttons -->
 <div class="interval-buttons">
-    <button *ngFor="let interval of intervals" (click)="onIntervalChange(interval)"
-        [class.active]="selectedInterval === interval">
-        {{ interval }}
-    </button>
+  <button *ngFor="let interval of intervals" (click)="onIntervalChange(interval)"
+    [class.active]="selectedInterval === interval">
+    {{ interval }}
+  </button>
 </div>
 
 <div class="indicator-selection">
 
-    <!-- Moving Averages Row (SMA + EMA) -->
-    <div class="row" style="margin: 10px 0;">
-        <!-- SMA Section -->
-        <div class="indicator-group">
-            <label class="group-title">SMA:</label>
-            <div class="checkbox-group">
-                <label *ngFor="let period of smaOptions" class="checkbox-label">
-                    <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'SMA')"
-                        [checked]="selectedSMA.includes(period)" />
-                    SMA{{ period }}
-                </label>
-            </div>
-        </div>
-
-        <!-- EMA Section -->
-        <div class="indicator-group">
-            <label class="group-title">EMA:</label>
-            <div class="checkbox-group">
-                <label *ngFor="let period of emaOptions" class="checkbox-label">
-                    <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'EMA')"
-                        [checked]="selectedEMA.includes(period)" />
-                    EMA{{ period }}
-                </label>
-            </div>
-        </div>
+  <!-- Moving Averages Row (SMA + EMA) -->
+  <div class="row" style="margin: 10px 0;">
+    <!-- SMA Section -->
+    <div class="indicator-group">
+      <label class="group-title">SMA:</label>
+      <div class="checkbox-group">
+        <label *ngFor="let period of smaOptions" class="checkbox-label">
+          <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'SMA')"
+            [checked]="selectedSMA.includes(period)" />
+          SMA{{ period }}
+        </label>
+      </div>
     </div>
 
-    <!-- RSI Row -->
-    <div class="row" style="margin: 10px 0;">
-        <div class="indicator-group">
-            <label class="group-title">RSI:</label>
-            <div class="checkbox-group">
-                <label *ngFor="let period of rsiOptions" class="checkbox-label">
-                    <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'RSI')"
-                        [checked]="selectedRSI.includes(period)" />
-                    RSI{{ period }}
-                </label>
-            </div>
-        </div>
-        <div class="indicator-group">
-            <label class="group-title">MACD:</label>
-            <div class="checkbox-group">
-                <label *ngFor="let macd of macdOptions" class="checkbox-label">
-                    <input type="checkbox" (change)="onMacdChange($event, macd)" [checked]="isMacdSelected(macd)" />
-                    MACD({{ macd.fast }},{{ macd.slow }},{{ macd.signal }})
-                </label>
-            </div>
-        </div>
+    <!-- EMA Section -->
+    <div class="indicator-group">
+      <label class="group-title">EMA:</label>
+      <div class="checkbox-group">
+        <label *ngFor="let period of emaOptions" class="checkbox-label">
+          <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'EMA')"
+            [checked]="selectedEMA.includes(period)" />
+          EMA{{ period }}
+        </label>
+      </div>
     </div>
-    <div class="save-button">
-        <button (click)="saveCSV()">Save CSV</button>
+  </div>
+
+  <!-- RSI Row -->
+  <div class="row" style="margin: 10px 0;">
+    <div class="indicator-group">
+      <label class="group-title">RSI:</label>
+      <div class="checkbox-group">
+        <label *ngFor="let period of rsiOptions" class="checkbox-label">
+          <input type="checkbox" [value]="period" (change)="onCheckboxChange($event, 'RSI')"
+            [checked]="selectedRSI.includes(period)" />
+          RSI{{ period }}
+        </label>
+      </div>
     </div>
+    <div class="indicator-group">
+      <label class="group-title">MACD:</label>
+      <div class="checkbox-group">
+        <label *ngFor="let macd of macdOptions" class="checkbox-label">
+          <input type="checkbox" (change)="onMacdChange($event, macd)" [checked]="isMacdSelected(macd)" />
+          MACD({{ macd.fast }},{{ macd.slow }},{{ macd.signal }})
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="save-button">
+    <button (click)="saveCSV()">Save DB</button>
+    <button (click)="predict()" style="margin-left: 10px;">Predict</button>
+
+  </div>
+  <!-- Prediction Date Picker and Button -->
+  <!-- <div class="prediction-section" style="margin: 20px 0;">
+    <label for="predictionDate" class="group-title">Select Date for Prediction:</label>
+    <input type="date" id="predictionDate" [(ngModel)]="selectedPredictionDate" name="predictionDate" />
+
+  </div> -->
+
 </div>
 <div class="card" style="height: 480px; overflow: scroll;">
 
   <h4>──────────── Prediction Summary ────────────</h4>
 
-<p>🎯 <strong>Predicted Close:</strong> ₹{{ data.predictedClose | number:'1.1-1' }} on {{ data.predictionDate }}</p>
-<p>ℹ️ <strong>Expected Error Margin:</strong> ±{{ data.mape || 15 }}%</p>
+  <p>🎯 <strong>Predicted Close:</strong> ₹{{ data.predictedClose | number:'1.1-1' }} on {{ data.predictionDate }}</p>
+  <p>ℹ️ <strong>Expected Error Margin:</strong> ±{{ data.mape || 15 }}%</p>
 
-<p>
-  📊 <strong>Confidence:</strong> {{ data.confidence | number:'1.0-0' }}%
-  <span class="tooltip" title="Confidence derived from model’s historical accuracy and validation.">(?)</span>
-  | 🟢 {{ data.riskLevel }}
-</p>
+  <p>
+    📊 <strong>Confidence:</strong> {{ data.confidence | number:'1.0-0' }}%
+    <span class="tooltip" title="Confidence derived from model’s historical accuracy and validation.">(?)</span>
+    |
+    <span [ngClass]="getRiskClass(data.riskLevel)">
+      {{ getRiskDot(data.riskLevel) }} {{ data.riskLevel }}
+    </span>
+  </p>
 
-<p>
-  📅 <strong>Model Trained:</strong> {{ data.trainedDate }}
-  <span class="tooltip" title="Date until which model was trained on historical data">(?)</span>
-</p>
 
-<p>
-  📈 <strong>Best:</strong> ₹{{ data.best | number:'1.1-1' }}&nbsp;&nbsp;
-  📍 <strong>Base:</strong> ₹{{ data.base | number:'1.1-1' }}&nbsp;&nbsp;
-  📉 <strong>Worst:</strong> ₹{{ data.worst | number:'1.1-1' }}
-</p>
 
-<p>🧪 <strong>Backtest Accuracy:</strong> {{ data.backtestAccuracy | number:'1.0-0' }}%</p>
-<p>📊 <strong>vs. Yahoo Finance Projection:</strong> {{ data.yahooAccuracy | number:'1.1-1' }}%</p>
-<p>📐 <strong>vs. SMA-only Estimate:</strong> {{ data.smaAccuracy | number:'1.1-1' }}%</p>
+  <p>
+    📅 <strong>Model Trained:</strong> {{ data.trainedDate }}
+    <span class="tooltip" title="Date until which model was trained on historical data">(?)</span>
+  </p>
 
-<h4>──────────── Top Drivers ────────────</h4>
-<ul>
-  <li [ngClass]="getArrowClass('ema20')">
-    {{ getArrowIcon('ema20') }} 📌 EMA20: {{ data.drivers.ema20 | number:'1.1-1' }}
-    <span class="tooltip" title="Exponential Moving Average over last 20 days">(?)</span>
-  </li>
-  <li [ngClass]="getArrowClass('rsi14')">
-    {{ getArrowIcon('rsi14') }} 📌 RSI14: {{ data.drivers.rsi14 | number:'1.1-1' }}
-    <span class="tooltip" title="Relative Strength Index over last 14 days">(?)</span>
-  </li>
-  <li>
-    📌 Sentiment Score: {{ data.drivers.sentiment }}
-    <span class="tooltip" title="Derived from news and social media analysis">(?)</span>
-  </li>
-</ul>
+  <p>
+    📈 <strong>Best:</strong> ₹{{ data.best | number:'1.1-1' }}&nbsp;&nbsp;
+    📍 <strong>Base:</strong> ₹{{ data.base | number:'1.1-1' }}&nbsp;&nbsp;
+    📉 <strong>Worst:</strong> ₹{{ data.worst | number:'1.1-1' }}
+  </p>
 
-<h4>──────────── Risk Factors ────────────</h4>
-<ul>
-  <li *ngFor="let risk of data.riskFactors">⚠️ {{ risk }}</li>
-</ul>
-<h4>──────────── Prediction vs Actual History ────────────</h4>
-<table class="history-table" *ngIf="data.history?.length" style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px;">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Predicted</th>
-      <th>Actual</th>
-      <th>Error</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let record of data.history">
-      <td>{{ record.date }}</td>
-      <td>{{ record.predicted }}</td>
-      <td>{{ record.actual }}</td>
-      <td [ngClass]="{'positive': record.error && record.error.startsWith('-'), 'negative': record.error && !record.error.startsWith('-')}">
-        {{ record.error }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <p>🧪 <strong>Backtest Accuracy:</strong> {{ data.backtestAccuracy | number:'1.0-0' }}%</p>
+  <p>📊 <strong>vs. Yahoo Finance Projection:</strong> {{ data.yahooAccuracy | number:'1.1-1' }}%</p>
+  <p>📐 <strong>vs. SMA-only Estimate:</strong> {{ data.smaAccuracy | number:'1.1-1' }}%</p>
+
+  <h4>──────────── Top Drivers ────────────</h4>
+  <ul>
+    <li [ngClass]="getArrowClass('ema20')">
+      {{ getArrowIcon('ema20') }} 📌 EMA20: {{ data.drivers.ema20 | number:'1.1-1' }}
+      <span class="tooltip" title="Exponential Moving Average over last 20 days">(?)</span>
+    </li>
+    <li [ngClass]="getArrowClass('rsi14')">
+      {{ getArrowIcon('rsi14') }} 📌 RSI14: {{ data.drivers.rsi14 | number:'1.1-1' }}
+      <span class="tooltip" title="Relative Strength Index over last 14 days">(?)</span>
+    </li>
+    <li>
+      📌 Sentiment Score: {{ data.drivers.sentiment }}
+      <span class="tooltip" title="Derived from news and social media analysis">(?)</span>
+    </li>
+  </ul>
+
+  <h4>──────────── Risk Factors ────────────</h4>
+  <ul>
+    <li *ngFor="let risk of data.riskFactors">⚠️ {{ risk }}</li>
+  </ul>
+  <h4>──────────── Prediction vs Actual History ────────────</h4>
+  <table class="history-table" *ngIf="data.history?.length"
+    style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px;">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Predicted</th>
+        <th>Actual</th>
+        <th>Error</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of data.history">
+        <td>{{ record.date }}</td>
+        <td>{{ record.predicted }}</td>
+        <td>{{ record.actual }}</td>
+        <td
+          [ngClass]="{'positive': record.error && record.error.startsWith('-'), 'negative': record.error && !record.error.startsWith('-')}">
+          {{ record.error }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
-<!-- <div class="card" style="height: 520px;overflow: scroll;">
-    <h3>──────────── Prediction Summary ────────────</h3>
-    <p>🎯 <strong>Predicted Close:</strong> ₹{{ data.predictedClose }} on {{ data.predictionDate }}</p>
-    <p>📊 <strong>Confidence:</strong> {{ data.confidence }}% | 🟢 {{ data.riskLevel }}</p>
-    <p>📅 <strong>Model Trained:</strong> {{ data.trainedDate }}</p>
-    <p>
-        📈 <strong>Best:</strong> ₹{{ data.best }} &nbsp;&nbsp;
-        📍 <strong>Base:</strong> ₹{{ data.base }} &nbsp;&nbsp;
-        📉 <strong>Worst:</strong> ₹{{ data.worst }}
-    </p>
-
-    <p>🧪 <strong>Backtest Accuracy:</strong> {{ data.backtestAccuracy }}%</p>
-    <p>📊 <strong>vs. Yahoo Finance Projection:</strong> {{ data.yahooAccuracy }}%</p>
-    <p>📐 <strong>vs. SMA-only Estimate:</strong> {{ data.smaAccuracy }}%</p>
-
-    <h3>──────────── Drivers ────────────</h3>
-    <p>📌 EMA20: {{ data.drivers.ema20 }}</p>
-    <p>📌 RSI14: {{ data.drivers.rsi14 }}</p>
-    <p>📌 Sentiment Score: {{ data.drivers.sentiment }}</p>
-
-    <h3>──────────── Risk Factors ────────────</h3>
-    <ul>
-        <li *ngFor="let risk of data.riskFactors">⚠️ {{ risk }}</li>
-    </ul>
-    <h3>──────────── Prediction vs Actual History ────────────</h3>
-</div> -->
+<div *ngIf="!data.history?.length" style="text-align: center; margin-top: 20px;">
+  <em>No historical prediction data available.</em>
+</div>

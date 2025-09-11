@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, input, OnChanges, SimpleChanges } from '@angular/core';
 import { LoaderService } from '../../service/loader';
 import { Post } from '../../service/post';
+import { FormsModule } from '@angular/forms';
 export interface pridection {
   symbols: string[];
   range: string;
@@ -38,7 +39,7 @@ interface PredictionData {
 
 @Component({
   selector: 'app-prediction',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './prediction.html',
   styleUrl: './prediction.css'
 })
@@ -48,6 +49,7 @@ export class Prediction implements OnChanges {
   intervals: string[] = ['1 D', '5 D', '1 M', '6 M', 'YTD', '1 Y', '5 Y', 'MAX'];
   constructor(private cdref: ChangeDetectorRef, private loader: LoaderService, private postService: Post) { }
   driverImpacts: { [key: string]: 'up' | 'down' } = {};
+  selectedPredictionDate: string = '';
 
   currentPrice = 189.23;
   currency = 'USD';
@@ -79,34 +81,65 @@ export class Prediction implements OnChanges {
   loading = false;
   error = '';
   data: PredictionData = {
-    stock: "TCS",
-    interval: "1M",
-    predictedClose: 3420.65,
-    predictionDate: "2025-08-12",
-    confidence: 87,
-    riskLevel: "Low Risk",
-    trainedDate: "Aug 10, 2025",
-    best: 3450,
-    base: 3420,
-    worst: 3390,
-    backtestAccuracy: 93.2,
-    yahooAccuracy: 86.4,
-    smaAccuracy: 78.9,
-    mape: 5.8,  // Expected prediction error margin (MAPE)
+    stock: "",
+    interval: "",
+    predictedClose: 0,
+    predictionDate: "",
+    confidence: 0,
+    riskLevel: "",
+    trainedDate: "",
+    best: 0,
+    base: 0,
+    worst: 0,
+    backtestAccuracy: 0,
+    yahooAccuracy: 0,
+    smaAccuracy: 0,
+    mape: 0,  // Expected prediction error margin (MAPE)
     drivers: {
-      ema20: 3422.15,
-      rsi14: 58.2,
-      sentiment: "Positive"
+      ema20: 0,
+      rsi14: 0,
+      sentiment: ""
     },
     riskFactors: [
-      "Volatility: High (±1.8% daily)",
+      "Volatility: High",
       "Earnings report due in 3 days"
     ],
     history: [
-      { date: "Aug 08, 25", predicted: "₹3410.25", actual: "₹3408.10", error: "0.06%" },
-      { date: "Aug 09, 25", predicted: "₹3415.20", actual: "₹3418.00", error: "-0.08%" },
+      { date: "", predicted: "", actual: "0", error: "" },
+      { date: "", predicted: "", actual: "", error: "" },
     ]
   };
+
+  getRiskClass(riskLevel: string): string {
+    if (!riskLevel) return 'risk-unknown';
+
+    switch (riskLevel.toLowerCase()) {
+      case 'low risk':
+        return 'risk-low';
+      case 'medium risk':
+        return 'risk-medium';
+      case 'high risk':
+        return 'risk-high';
+      default:
+        return 'risk-unknown';
+    }
+  }
+
+  getRiskDot(riskLevel: string): string {
+    if (!riskLevel) return '⚪';
+
+    switch (riskLevel.toLowerCase()) {
+      case 'low risk':
+        return '🟢';
+      case 'medium risk':
+        return '🟠';
+      case 'high risk':
+        return '🔴';
+      default:
+        return '⚪';
+    }
+  }
+
 
 
 
@@ -114,8 +147,8 @@ export class Prediction implements OnChanges {
     if (changes['config'] && this.config) {
       this.symbol = this.config.symbols[0]
       console.log(this.config)
-      this.fetchUpdatedprediton()
-      this.computeDriverImpacts();
+      // this.fetchUpdatedprediton()
+      // this.computeDriverImpacts();
     }
   }
 
@@ -165,6 +198,24 @@ export class Prediction implements OnChanges {
     return 'NYSE / NASDAQ (US)';
   }
 
+
+
+  //Rajat Ranjan 09-09-2025
+  predict() {
+    this.fetchUpdatedprediton();
+    return
+    if (!this.selectedPredictionDate) {
+      alert("Please select a date before predicting.");
+      return;
+    }
+
+    // You can call a service or emit an event here
+    console.log("Predicting for date:", this.selectedPredictionDate);
+    // this.fetchUpdatedprediton();
+
+  }
+
+
   fetchUpdatedprediton() {
     this.loader.show();
     this.postService.preditionml(this.config).subscribe({
@@ -205,6 +256,30 @@ export class Prediction implements OnChanges {
     this.selectedInterval = interval
     console.log(interval)
     this.config.range = this.selectedInterval.replace(/\s+/g, '');
+  }
+
+  ngOnInit() {
+    var pd = { 'symbol': this.config.symbols, "range": this.selectedInterval, "reportType": 'day' }
+    console.log("pd", pd)
+    // this.getExchangeFromSymbol(item.symbols)
+    this.postService.report(pd).subscribe({
+      next: (res: any) => {
+        if (res['message'] == 'Done') {
+          this.loader.hide()
+          console.log(res)
+          this.currentPrice = res.data[0].currentPrice;
+          this.currency = res.data[0].currency
+          this.lastUpdated =res.data[0].lastUpdated;
+          this.cdref.detectChanges()
+          this.getExchangeFromSymbol(res.data[0].symbol)
+          this.fetchUpdatedprediton()
+        }
+      },
+      error: (error) => {
+        this.loader.hide()
+        console.log(error)
+      }
+    })
   }
 
   saveCSV(): void {
