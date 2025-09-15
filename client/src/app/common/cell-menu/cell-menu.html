@@ -5,6 +5,11 @@
 
 <!-- Mat Menu -->
 <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="onSelect('view-all', 'reports')">
+        <mat-icon>list</mat-icon>
+        <span>View All Stocks</span>
+    </button>
+    <mat-divider></mat-divider>
     <!-- 📑 Reports -->
     <button mat-menu-item (click)="onSelect('day', 'reports')">
         <mat-icon>calendar_today</mat-icon>
@@ -18,12 +23,6 @@
         <mat-icon>insert_chart</mat-icon>
         <span>Annual Report</span>
     </button>
-    <button mat-menu-item (click)="onSelect('view-all', 'reports')">
-        <mat-icon>list</mat-icon>
-        <span>View All Stocks</span>
-    </button>
-    <mat-divider></mat-divider>
-
     <!-- 🧠 Analysis -->
     <button mat-menu-item (click)="onSelect('price', 'analysis')">
         <mat-icon>show_chart</mat-icon>
@@ -49,12 +48,12 @@
         <mat-icon>trending_up</mat-icon>
         <span>Predict Stock Price</span>
     </button>
-    <button mat-menu-item (click)="onSelect('PredictHistorical', 'Prediction')">
+    <!-- <button mat-menu-item (click)="onSelect('PredictHistorical', 'Prediction')">
         <mat-icon>history</mat-icon>
         <span>Historical Comparison</span>
     </button>
     <button mat-menu-item (click)="onSelect('PredictConfidence', 'Prediction')">
         <mat-icon>track_changes</mat-icon>
         <span>Confidence Score</span>
-    </button>
+    </button> -->
 </mat-menu>

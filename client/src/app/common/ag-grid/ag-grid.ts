@@ -57,7 +57,7 @@ export class AgGrid implements OnInit, OnChanges {
         pinned: 'right',
         cellRenderer: CellMenu,  // ✅ Use the Angular component
         width: 70,
-        maxWidth: 90,
+        maxWidth: 85,
         sortable: false,
         filter: false
       };

@@ -1,3 +1,36 @@
+<!-- <div class="sentiment-header">
+    🔍 Stock: <strong>{{ stockSymbol || 'N/A' }}</strong> | Range: <strong>{{ range || 'N/A' }}</strong> | Source: <span
+        class="emoji">🗞️ News</span>
+</div> -->
+
+<section class="sentiment-summary stock-info-headerbglight">
+    <div class="sentiment-header">💬 Sentiment Analysis - {{ stockSymbol || 'Stock' }} (Last {{ range || 'Period' }})|
+        Source: <span class="emoji">🗞️ News</span></div>
+
+    <div class="sentiment-stats">
+        <div class="stat-item">
+            <span class="label">🟢 Score:</span>
+            <span class="score" [class.positive]="sentimentData.score > 0" [class.negative]="sentimentData.score < 0"
+                [class.neutral]="sentimentData.score === 0">
+                {{ sentimentData.score || 0 }}
+            </span>
+            ({{ sentimentData.score > 0 ? 'Positive' : sentimentData.score < 0 ? 'Negative' : 'Neutral' }}) </div>
+
+                <div class="stat-item"><span class="label">📰 Sources:</span> {{ sentimentData.sources || 0 }}</div>
+                <div class="stat-item"><span class="label">📉 Negative:</span> {{ sentimentData.negative || 0 }}</div>
+                <div class="stat-item"><span class="label">📈 Positive:</span> {{ sentimentData.positive || 0 }}</div>
+                <div class="stat-item"><span class="label">⚖️ Neutral:</span> {{ sentimentData.neutral || 0 }}</div>
+                <div class="stat-item"><span class="label">📅 Date:</span> {{ sentimentData.from }} → {{
+                    sentimentData.to }}</div>
+
+                <div class="stat-item">
+                    <span class="label">📊 Sources:</span>
+                    <ng-container *ngFor="let source of sentimentSources">
+                        {{ source.name }} ({{ source.count }})&nbsp;
+                    </ng-container>
+                </div>
+        </div>
+</section>
 <div class="interval-selector">
     <label>📆 Interval:</label>
     <button *ngFor="let interval of intervals" (click)="onIntervalChange(interval)"
@@ -5,12 +38,8 @@
         {{ interval }}
     </button>
 </div>
-<div class="sentiment-header">
-    🔍 Stock: <strong>{{ stockSymbol || 'N/A' }}</strong> | Range: <strong>{{ range || 'N/A' }}</strong> | Source: <span
-        class="emoji">🗞️ News</span>
-</div>
 
-<section class="sentiment-summary">
+<!-- <section class="sentiment-summary stock-info-headerbglight">
     <h3>💬 Sentiment Analysis - {{ stockSymbol || 'Stock' }} (Last {{ range || 'Period' }})</h3>
 
     <ul class="sentiment-stats">
@@ -30,10 +59,8 @@
             <span class="label">⚖️ Neutral:</span> {{ sentimentData.neutral || 0 }}
         </li>
     </ul>
-</section>
-<hr />
-
-<section class="headlines" style="height: 450px;overflow: scroll;">
+</section> -->
+<section class="headlines stock-info-headerbglight" style="height: 480px;overflow: scroll;">
     <h4>📰 Article Sentiments</h4>
     <div *ngFor="let h of sentimentData.headlines" class="headline-item">
         <p [class.positive]="h.score > 0" [class.negative]="h.score < 0" [class.neutral]="h.score === 0">

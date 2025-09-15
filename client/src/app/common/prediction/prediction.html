@@ -20,14 +20,14 @@
 </div>
 
 <!-- Interval Buttons -->
-<div class="interval-buttons">
+<div class="interval-buttons" *ngIf="curentView === 'Predictstock'">
   <button *ngFor="let interval of intervals" (click)="onIntervalChange(interval)"
     [class.active]="selectedInterval === interval">
     {{ interval }}
   </button>
 </div>
 
-<div class="indicator-selection">
+<div class="indicator-selection" *ngIf="curentView === 'Predictstock'">
 
   <!-- Moving Averages Row (SMA + EMA) -->
   <div class="row" style="margin: 10px 0;">
@@ -91,83 +91,175 @@
   </div> -->
 
 </div>
-<div class="card" style="height: 480px; overflow: scroll;">
+<div class="card" style="height: 480px; overflow: scroll;" *ngIf="curentView === 'Predictstock'">
+  <div class="card" style="display: flex;flex-direction: row;gap: 15px;">
+    <div class="stock-info-headerbglight" style="width: 33%;">
+      <h4> Prediction Summary </h4>
 
-  <h4>──────────── Prediction Summary ────────────</h4>
+      <p>🎯 <strong>Predicted Close:</strong> ₹{{ data.predictedClose | number:'1.1-1' }} on {{ data.predictionDate }}
+      </p>
+      <p>ℹ️ <strong>Expected Error Margin:</strong> ±{{ data.mape || 15 }}%</p>
+      <p>
+        📊 <strong>Confidence:</strong> {{ data.confidence | number:'1.0-0' }}%
+        <span class="tooltip" title="Confidence derived from model’s historical accuracy and validation.">(?)</span>
+        |
+        <span [ngClass]="getRiskClass(data.riskLevel)">
+          {{ getRiskDot(data.riskLevel) }} {{ data.riskLevel }}
+        </span>
+      </p>
+      <p>
+        📅 <strong>Model Trained:</strong> {{ data.trainedDate }}
+        <span class="tooltip" title="Date until which model was trained on historical data">(?)</span>
+      </p>
+      <p>
+        📈 <strong>Best:</strong> ₹{{ data.best | number:'1.1-1' }}&nbsp;&nbsp;
+        📍 <strong>Base:</strong> ₹{{ data.base | number:'1.1-1' }}&nbsp;&nbsp;
+        📉 <strong>Worst:</strong> ₹{{ data.worst | number:'1.1-1' }}
+      </p>
+      <p>🧪 <strong>Backtest Accuracy:</strong> {{ data.backtestAccuracy | number:'1.0-0' }}%</p>
+      <p>📊 <strong>vs. Yahoo Finance Projection:</strong> {{ data.yahooAccuracy | number:'1.1-1' }}%</p>
+      <p>📐 <strong>vs. SMA-only Estimate:</strong> {{ data.smaAccuracy | number:'1.1-1' }}%</p>
 
-  <p>🎯 <strong>Predicted Close:</strong> ₹{{ data.predictedClose | number:'1.1-1' }} on {{ data.predictionDate }}</p>
-  <p>ℹ️ <strong>Expected Error Margin:</strong> ±{{ data.mape || 15 }}%</p>
+    </div>
+    <div class="stock-info-headerbglight" style="width: 33%;">
+      <h4> Top Drivers </h4>
+      <ul>
+        <li [ngClass]="getArrowClass('ema20')">
+          {{ getArrowIcon('ema20') }} 📌 EMA20: {{ data.drivers.ema20 | number:'1.1-1' }}
+          <span class="tooltip" title="Exponential Moving Average over last 20 days">(?)</span>
+        </li>
+        <li [ngClass]="getArrowClass('rsi14')">
+          {{ getArrowIcon('rsi14') }} 📌 RSI14: {{ data.drivers.rsi14 | number:'1.1-1' }}
+          <span class="tooltip" title="Relative Strength Index over last 14 days">(?)</span>
+        </li>
+        <li>
+          📌 Sentiment Score: {{ data.drivers.sentiment }}
+          <span class="tooltip" title="Derived from news and social media analysis">(?)</span>
+        </li>
+      </ul>
 
-  <p>
-    📊 <strong>Confidence:</strong> {{ data.confidence | number:'1.0-0' }}%
-    <span class="tooltip" title="Confidence derived from model’s historical accuracy and validation.">(?)</span>
-    |
-    <span [ngClass]="getRiskClass(data.riskLevel)">
-      {{ getRiskDot(data.riskLevel) }} {{ data.riskLevel }}
-    </span>
-  </p>
-
-
-
-  <p>
-    📅 <strong>Model Trained:</strong> {{ data.trainedDate }}
-    <span class="tooltip" title="Date until which model was trained on historical data">(?)</span>
-  </p>
-
-  <p>
-    📈 <strong>Best:</strong> ₹{{ data.best | number:'1.1-1' }}&nbsp;&nbsp;
-    📍 <strong>Base:</strong> ₹{{ data.base | number:'1.1-1' }}&nbsp;&nbsp;
-    📉 <strong>Worst:</strong> ₹{{ data.worst | number:'1.1-1' }}
-  </p>
-
-  <p>🧪 <strong>Backtest Accuracy:</strong> {{ data.backtestAccuracy | number:'1.0-0' }}%</p>
-  <p>📊 <strong>vs. Yahoo Finance Projection:</strong> {{ data.yahooAccuracy | number:'1.1-1' }}%</p>
-  <p>📐 <strong>vs. SMA-only Estimate:</strong> {{ data.smaAccuracy | number:'1.1-1' }}%</p>
-
-  <h4>──────────── Top Drivers ────────────</h4>
-  <ul>
-    <li [ngClass]="getArrowClass('ema20')">
-      {{ getArrowIcon('ema20') }} 📌 EMA20: {{ data.drivers.ema20 | number:'1.1-1' }}
-      <span class="tooltip" title="Exponential Moving Average over last 20 days">(?)</span>
-    </li>
-    <li [ngClass]="getArrowClass('rsi14')">
-      {{ getArrowIcon('rsi14') }} 📌 RSI14: {{ data.drivers.rsi14 | number:'1.1-1' }}
-      <span class="tooltip" title="Relative Strength Index over last 14 days">(?)</span>
-    </li>
-    <li>
-      📌 Sentiment Score: {{ data.drivers.sentiment }}
-      <span class="tooltip" title="Derived from news and social media analysis">(?)</span>
-    </li>
-  </ul>
-
-  <h4>──────────── Risk Factors ────────────</h4>
-  <ul>
-    <li *ngFor="let risk of data.riskFactors">⚠️ {{ risk }}</li>
-  </ul>
-  <h4>──────────── Prediction vs Actual History ────────────</h4>
-  <table class="history-table" *ngIf="data.history?.length"
-    style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px;">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Predicted</th>
-        <th>Actual</th>
-        <th>Error</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let record of data.history">
-        <td>{{ record.date }}</td>
-        <td>{{ record.predicted }}</td>
-        <td>{{ record.actual }}</td>
-        <td
-          [ngClass]="{'positive': record.error && record.error.startsWith('-'), 'negative': record.error && !record.error.startsWith('-')}">
-          {{ record.error }}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    </div>
+    <div class="stock-info-headerbglight" style="width: 33%;">
+      <h4> Risk Factors </h4>
+      <ul>
+        <li *ngFor="let risk of data.riskFactors">⚠️ {{ risk }}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="stock-info-headerbglight">
+    <h4> Prediction vs Actual History </h4>
+    <table class="history-table" *ngIf="data.history?.length"
+      style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px;">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Predicted</th>
+          <th>Actual</th>
+          <th>Error</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of data.history">
+          <td>{{ record.date }}</td>
+          <td>{{ record.predicted }}</td>
+          <td>{{ record.actual }}</td>
+          <td
+            [ngClass]="{'positive': record.error && record.error.startsWith('-'), 'negative': record.error && !record.error.startsWith('-')}">
+            {{ record.error }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
+<div *ngIf="curentView === 'PredictHistorical'" style="margin-top: 20px;">
+  <h3 style="text-align: center;">📊 Historical Prediction vs Actual</h3>
+  <div style="width: 100%;height: calc(100% - 200px);display: flex;flex-direction: row;gap: 20px;">
+    <div class="stock-info-header" style="width: 47%;background-color: white;">
+      <div *ngIf="data.history?.length" style="overflow: auto; margin-top: 20px;">
+        <table class="history-table"
+          style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; min-width: 600px;">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Predicted</th>
+              <th>Actual</th>
+              <th>Error (%)</th>
+              <th>Abs Error (₹)</th> <!-- New Column -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of data.history">
+              <td>{{ record.date }}</td>
+              <td>{{ record.predicted }}
+                <span
+                  [ngClass]="{'arrow-up': isUp(record.predicted, record.actual), 'arrow-down': !isUp(record.predicted, record.actual)}">
+                  {{ isUp(record.predicted, record.actual) ? '⬆️' : '⬇️' }}
+                </span>
+              </td>
+              <td>{{ record.actual }}</td>
+              <td
+                [ngClass]="{'positive': record.error && record.error.startsWith('-'), 'negative': record.error && !record.error.startsWith('-')}">
+                {{ record.error }}
+              </td>
+              <td [ngClass]="{'high-error': getAbsError(record) > 50}"> <!-- custom styling for high error -->
+                ₹{{ getAbsError(record) | number:'1.2-2' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="stock-info-header" style="width: 47%;background-color: white;">
+      <apx-chart *ngIf="chartOptions" [series]="chartOptions.series" [chart]="chartOptions.chart"
+        [xaxis]="chartOptions.xaxis" [stroke]="chartOptions.stroke" [title]="chartOptions.title">
+      </apx-chart>
+    </div>
+  </div>
+
+  <div *ngIf="!data.history?.length" style="text-align: center; margin-top: 20px;">
+    <em>No historical prediction data available.</em>
+  </div>
+</div>
+
+<div *ngIf="curentView === 'PredictConfidence'" class="confidence-card"
+  style="max-width: 400px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-family: Arial, sans-serif;">
+  <h3 style="text-align: center; margin-bottom: 15px;">🔒 Confidence Score</h3>
+
+  <div *ngIf="data?.confidence !== undefined" class="confidence-content" style="text-align: center;">
+    <p style="font-size: 2rem; font-weight: bold; margin: 10px 0;">
+      {{ animatedConfidence }}%
+    </p>
+    <p style="margin-bottom: 10px;">
+      Confidence represents the model’s reliability based on historical accuracy and validation.
+    </p>
+    <p>
+      Risk Level:
+      <span [ngClass]="getRiskClass(data.riskLevel)" style="font-weight: bold;">
+        {{ data.riskLevel }}
+      </span>
+    </p>
+    <p style="font-style: italic; font-size: 0.9rem; color: gray;">
+      Model trained up to: {{ data.trainedDate }}
+    </p>
+
+    <div class="progress-bar-container" aria-label="Confidence Level"
+      style="height: 20px; background: #eee; border-radius: 10px; margin: 15px 0;">
+      <div class="progress-bar" [style.width.%]="animatedConfidence"
+        style="height: 100%; background: #4caf50; border-radius: 10px; transition: width 0.4s ease;"></div>
+    </div>
+
+    <p class="summary-text" style="font-size: 0.9rem; color: #555;">
+      {{ confidenceSummary }}
+    </p>
+  </div>
+
+  <div *ngIf="data?.confidence === undefined" style="text-align: center; font-style: italic; color: gray;">
+    Confidence score data not available.
+  </div>
+</div>
+
+
 <div *ngIf="!data.history?.length" style="text-align: center; margin-top: 20px;">
   <em>No historical prediction data available.</em>
 </div>

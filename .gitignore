@@ -15,6 +15,7 @@ server/ml/
 server/venv/
 ml/
 server/ml
+server/pysrc
 venv/
 createUser.js
 # Database files

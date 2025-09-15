@@ -3,6 +3,8 @@ import { ChangeDetectorRef, Component, Input, input, OnChanges, SimpleChanges } 
 import { LoaderService } from '../../service/loader';
 import { Post } from '../../service/post';
 import { FormsModule } from '@angular/forms';
+import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexStroke, ApexTitleSubtitle, NgApexchartsModule } from 'ng-apexcharts';
+
 export interface pridection {
   symbols: string[];
   range: string;
@@ -39,7 +41,7 @@ interface PredictionData {
 
 @Component({
   selector: 'app-prediction',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgApexchartsModule],
   templateUrl: './prediction.html',
   styleUrl: './prediction.css'
 })
@@ -50,9 +52,13 @@ export class Prediction implements OnChanges {
   constructor(private cdref: ChangeDetectorRef, private loader: LoaderService, private postService: Post) { }
   driverImpacts: { [key: string]: 'up' | 'down' } = {};
   selectedPredictionDate: string = '';
-
+  curentView: 'Predictstock' | 'PredictHistorical' | 'PredictConfidence' = 'Predictstock';
+  // Sample static data for demonstration
   currentPrice = 189.23;
   currency = 'USD';
+  animatedConfidence = 0;
+  confidenceSummary = 'Model confidence is high based on recent historical data and validations.';
+
   symbol = '';
   lastUpdated = new Date();
   percentageChange: number | null = null;
@@ -146,11 +152,37 @@ export class Prediction implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config'] && this.config) {
       this.symbol = this.config.symbols[0]
+      this.curentView = this.config.reportType as any;
+      if (this.curentView == 'PredictHistorical')
+        this.setupChartData()
+      else if (this.curentView == 'PredictConfidence')
+        this.animateConfidence()
+      this.cdref.detectChanges()
       console.log(this.config)
       // this.fetchUpdatedprediton()
       // this.computeDriverImpacts();
     }
   }
+
+  isUp(predicted: string, actual: string): boolean {
+    const predNum = parseFloat(predicted.replace(/[₹,]/g, ''));
+    const actNum = parseFloat(actual.replace(/[₹,]/g, ''));
+    return predNum >= actNum;
+  }
+  getAbsError(record: any): number {
+    // parse actual and predicted numbers from strings like "₹624.65"
+    const actual = parseFloat(record.actual.replace(/[₹,]/g, ''));
+    const predicted = parseFloat(record.predicted.replace(/[₹,]/g, ''));
+    return Math.abs(actual - predicted);
+  }
+
+  getConfidenceClass(confidence: number): string {
+    if (confidence >= 70) return 'confidence-high';
+    if (confidence >= 40) return 'confidence-medium';
+    return 'confidence-low';
+  }
+
+
 
   onCheckboxChange(event: Event, type: 'SMA' | 'EMA' | 'RSI') {
     const input = event.target as HTMLInputElement;
@@ -168,6 +200,16 @@ export class Prediction implements OnChanges {
     }
     // this.fetchUpdatedAnalysis();
   }
+
+  animateConfidence() {
+    const target = this.data?.confidence ?? 0;
+    console.log(`Animating confidence from 0 to ${target}%`);
+    this.animatedConfidence = target;
+    return
+  }
+
+
+
 
   onMacdChange(event: Event, macd: { fast: number; slow: number; signal: number }) {
     const input = event.target as HTMLInputElement;
@@ -229,11 +271,64 @@ export class Prediction implements OnChanges {
       error: (err) => {
         this.loader.hide();
         console.error(err);
+        this.data = this.data
         this.error = 'Prediction loading failed';
       }
     });
   }
 
+  chartOptions: {
+    series: ApexAxisChartSeries;
+    chart: ApexChart;
+    xaxis: ApexXAxis;
+    stroke: ApexStroke;
+    title: ApexTitleSubtitle;
+  } = {
+      series: [],
+      chart: {
+        type: 'line',
+        height: 350
+      },
+      xaxis: {
+        categories: []
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+      title: {
+        text: 'Predicted vs Actual'
+      }
+    };
+
+
+  setupChartData() {
+    if (!this.data?.history?.length) return;
+
+    const labels = this.data.history.map((h: any) => h.date);
+    const predicted = this.data.history.map((h: any) =>
+      parseFloat(h.predicted.replace(/[^\d.]/g, '')) || null
+    );
+    const actual = this.data.history.map((h: any) =>
+      parseFloat(h.actual.replace(/[^\d.]/g, '')) || null
+    );
+
+    this.chartOptions = {
+      ...this.chartOptions,
+      series: [
+        {
+          name: 'Predicted',
+          data: predicted
+        },
+        {
+          name: 'Actual',
+          data: actual
+        }
+      ],
+      xaxis: {
+        categories: labels
+      }
+    };
+  }
 
   // Add this method in your Prediction component
   getArrowIcon(driver: string): string {
@@ -269,7 +364,7 @@ export class Prediction implements OnChanges {
           console.log(res)
           this.currentPrice = res.data[0].currentPrice;
           this.currency = res.data[0].currency
-          this.lastUpdated =res.data[0].lastUpdated;
+          this.lastUpdated = res.data[0].lastUpdated;
           this.cdref.detectChanges()
           this.getExchangeFromSymbol(res.data[0].symbol)
           this.fetchUpdatedprediton()

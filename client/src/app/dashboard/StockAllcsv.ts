@@ -15,7 +15,7 @@ import { Post } from '../service/post';
     standalone: true,
     imports: [MatButtonModule, MatDialogModule, MatTableModule, CommonModule, MatIcon, MatCheckbox],
     template: `
-    <div style='display: flex; justify-content: space-between; align-items: center;'>
+    <div class="stock-info-headerbglight" style='display: flex; justify-content: space-between; align-items: center;'>
    <h1 mat-dialog-title>{{ data?.title || 'Import CSV' }}</h1>
    <input matInput placeholder="Search" (input)="dataSource.filter = $event.target.value.trim().toLowerCase()" style="width: 200px; margin-right: 10px;">
     <button mat-icon-button (click)="importdata()" style="color:blue;">
@@ -82,6 +82,13 @@ import { Post } from '../service/post';
     </div>
     `,
     styles: `
+        .stock-info-headerbglight {
+    padding: 1rem;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
         .table-container {
         overflow: auto;
         max-height: 800px; /* Adjust height as needed */

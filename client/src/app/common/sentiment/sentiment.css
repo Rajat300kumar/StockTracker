@@ -128,3 +128,30 @@
   color: white;
   border-color: #007bff;
 }
+.sentiment-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.stat-item {
+  flex: 1 1 250px; /* Grow/shrink but minimum 250px */
+  min-width: 200px;
+  white-space: nowrap;
+}
+
+.label {
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.score.positive {
+  color: green;
+}
+.score.negative {
+  color: red;
+}
+.score.neutral {
+  color: gray;
+}

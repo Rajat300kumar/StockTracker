@@ -23,6 +23,7 @@ export class Sentiment {
   selectedInterval: string = '6M'; // Default interval
   @Input() config !: SentimentConfig;
   sentimentData: any
+  sentimentSources: { name: string; count: unknown; }[] | undefined;
 
 
   constructor(private cdref: ChangeDetectorRef, private loader: LoaderService, private postService: Post) { }
@@ -51,10 +52,12 @@ export class Sentiment {
         this.loader.hide()
         console.log(res)
 
-        // 👇 Transform response into the format the template expects
         this.sentimentData = {
           score: res.overallSentimentScore || 0,
           sources: res.articles?.length || 0,
+          from: res.from,
+          to: res.to,
+          bySource: res.bySource || {},
           negative: res.articles?.filter((a: any) => a.sentiment?.score < 0).length || 0,
           positive: res.articles?.filter((a: any) => a.sentiment?.score > 0).length || 0,
           neutral: res.articles?.filter((a: any) => a.sentiment?.score === 0).length || 0,
@@ -63,6 +66,10 @@ export class Sentiment {
             text: a.title || 'Untitled',
           })) || [],
         };
+        // Prepare array for looping in template
+        this.sentimentSources = Object.entries(this.sentimentData.bySource)
+          .map(([key, count]) => ({ name: key, count }))
+          .filter((s: any) => s.count > 0);
 
         // Optional: Update range and symbol for display
         this.range = res.range || this.selectedInterval;

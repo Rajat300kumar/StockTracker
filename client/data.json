@@ -1,4 +1,17 @@
 [
+   {
+    "SYMBOL": "TCS",
+    "NAME OF COMPANY": "Tata Consultancy Services Limited",
+    "SERIES": "EQ",
+    "DATE OF LISTING": "25-Aug-04",
+    "PAID UP VALUE": "1",
+    "MARKET LOT": "1",
+    "ISIN NUMBER": "INE467B01029",
+    "FACE VALUE": "1",
+    "Ticker": ".NS",
+    "YahooEquiv": "TCS.NS",
+    "Yahoo_Equivalent_Code": "'TCS.NS'"
+  },
   {
     "SYMBOL": "RELIANCE",
     "NAME OF COMPANY": "Reliance Industries Limited",
@@ -39,16 +52,56 @@
     "Yahoo_Equivalent_Code": "'HDFCBANK.NS'"
   },
   {
-    "SYMBOL": "TCS",
-    "NAME OF COMPANY": "Tata Consultancy Services Limited",
+    "SYMBOL": "WABAG",
+    "NAME OF COMPANY": "VA Tech Wabag Limited",
     "SERIES": "EQ",
-    "DATE OF LISTING": "25-Aug-04",
-    "PAID UP VALUE": "1",
+    "DATE OF LISTING": "13‑Oct‑2010",                 
+    "PAID UP VALUE": "2",                             
     "MARKET LOT": "1",
-    "ISIN NUMBER": "INE467B01029",
-    "FACE VALUE": "1",
+    "ISIN NUMBER": "INE956G01038",                     
+    "FACE VALUE": "2",
     "Ticker": ".NS",
-    "YahooEquiv": "TCS.NS",
-    "Yahoo_Equivalent_Code": "'TCS.NS'"
+    "YahooEquiv": "WABAG.NS",
+    "Yahoo_Equivalent_Code": "'WABAG.NS'"
+  },
+  {
+    "SYMBOL": "WAAREEENER",
+    "NAME OF COMPANY": "Waaree Energies Limited",
+    "SERIES": "EQ",
+    "DATE OF LISTING": "28‑Oct‑2024",                 
+    "PAID UP VALUE": "10",                            
+    "MARKET LOT": "1",
+    "ISIN NUMBER": "INE377N01017",                     
+    "FACE VALUE": "10",
+    "Ticker": ".NS",
+    "YahooEquiv": "WAAREEENER.NS",
+    "Yahoo_Equivalent_Code": "'WAAREEENER.NS'"
+  },
+  {
+    "SYMBOL": "HINDCOPPER",
+    "NAME OF COMPANY": "Hindustan Copper Limited",
+    "SERIES": "EQ",
+    "DATE OF LISTING": null,                          
+    "PAID UP VALUE": null,                            
+    "MARKET LOT": "1",
+    "ISIN NUMBER": "INE531E01026",                     
+    "FACE VALUE": "5",
+    "Ticker": ".NS",
+    "YahooEquiv": "HINDCOPPER.NS",
+    "Yahoo_Equivalent_Code": "'HINDCOPPER.NS'"
+  },
+  {
+    "SYMBOL": "SILVERBEES",
+    "NAME OF COMPANY": "Nippon India Silver ETF",
+    "SERIES": "EQ",
+    "DATE OF LISTING": null,
+    "PAID UP VALUE": null,
+    "MARKET LOT": null,
+    "ISIN NUMBER": "INF204KC1402",
+    "FACE VALUE": null,
+    "Ticker": ".NS",
+    "YahooEquiv": "SILVERBEES.NS",
+    "Yahoo_Equivalent_Code": "'SILVERBEES.NS'"
   }
+
 ]

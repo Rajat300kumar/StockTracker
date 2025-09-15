@@ -1,74 +1,90 @@
 .interval-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 1rem;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
 }
+
 .mat-tab-body-content {
-  overflow: hidden; /* prevent inner scroll */
-  height: 100%;     /* fill the tab content area */
+  overflow: hidden;
+  /* prevent inner scroll */
+  height: 100%;
+  /* fill the tab content area */
 }
+
 .table-container {
-  height: 450px;       /* fixed height */
-  overflow-y: auto;    /* vertical scrollbar if needed */
-  display: block;      /* ensure it behaves like a block element */
+  height: 450px;
+  /* fixed height */
+  overflow-y: auto;
+  /* vertical scrollbar if needed */
+  display: block;
+  /* ensure it behaves like a block element */
+}
+
+.chart {
+  height: 450px;
+  /* fixed height */
+  overflow-y: auto;
+  /* vertical scrollbar if needed */
+  display: block;
+  /* ensure it behaves like a block element */
 }
 
 
 .interval-buttons button.active {
-    background-color: #3f51b5;
-    color: white;
+  background-color: #3f51b5;
+  color: white;
 }
 
 .stock-info-header {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .green-arrow {
-    color: green;
-    font-weight: 500;
+  color: green;
+  font-weight: 500;
 }
 
 .red-arrow {
-    color: red;
-    font-weight: 500;
+  color: red;
+  font-weight: 500;
 }
 
 .neutral-arrow {
-    color: #888;
-    font-weight: 500;
+  color: #888;
+  font-weight: 500;
 }
 
 
 
 .empty-state {
-    padding: 2rem;
-    text-align: center;
-    color: #999;
+  padding: 2rem;
+  text-align: center;
+  color: #999;
 }
 
 .stock-info-header {
-    padding: 1rem;
-    background-color: #f7f9fc;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f7f9fc;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 1rem;
 }
 
 .info-row {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
 }
 
 .positive {
-    color: green;
-    font-weight: 500;
+  color: green;
+  font-weight: 500;
 }
 
 .negative {
-    color: red;
-    font-weight: 500;
+  color: red;
+  font-weight: 500;
 }
 
 .indicator-selection {

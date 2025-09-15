@@ -56,9 +56,9 @@ export class SideMenu {
       label: 'Market Overview',
       color: '#ff9800', // Orange
       submenus: [
-        { key: 'IN', icon: 'flag', label: 'India', color: '#ff9800' },
+        // { key: 'IN', icon: 'flag', label: 'India', color: '#ff9800' },
         { key: 'US', icon: 'flag', label: 'USA', color: '#ff9800' },
-        { key: 'CN', icon: 'flag', label: 'China', color: '#ff9800' },
+        // { key: 'CN', icon: 'flag', label: 'China', color: '#ff9800' },
       ]
     },
     {

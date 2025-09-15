@@ -39,7 +39,7 @@
         <option value="donut">Donut</option>
     </select>
 </div>
-<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+<mat-tab-group mat-stretch-tabs="false" class="stock-info-headerbglight" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
     <mat-tab label="Table">
         <div *ngIf="stockData" class="table-container">
             <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>

@@ -1,4 +1,4 @@
-<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedIndexChange)="onTabChange($event)">
+<mat-tab-group mat-stretch-tabs="false" class="stock-info-headerbglight" mat-align-tabs="start" (selectedIndexChange)="onTabChange($event)">
     <mat-tab class="table-container" *ngFor="let tab of tabsList; let i = index" [label]="formatLabel(tab)" style="height: calc(100% - 45px);"
         [ngClass]="{ 'active-tab': selectedTabIndex === i }" >
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">

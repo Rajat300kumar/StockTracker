@@ -113,7 +113,7 @@ export class Dashboard implements OnInit {
     // add more as needed
   };
 
-  selectedColumns: string[] = ['symbol', 'shortName', 'financialCurrency', 'regularMarketDayRange.low', 'regularMarketPrice', 'regularMarketDayRange.high', 'marketCap', 'exchangeTimezoneName', 'marketState', 'fullExchangeName', 'regularMarketOpen', 'quoteType']; // can load from localStorage or user settings
+  selectedColumns: string[] = ['symbol', 'shortName', 'financialCurrency', 'regularMarketDayRange.low', 'regularMarketPrice', 'regularMarketDayRange.high', 'marketCap', 'regularMarketOpen']; // can load from localStorage or user settings
 
   getseletedstockslive(symbols: string[]) {
     console.log("symble", symbols)
